@@ -1,0 +1,58 @@
+@use "./utils/mixins" as *;
+
+// viewport
+
+:root {
+  --viewport: 1440;
+
+  @include mobile {
+    --viewport: 375;
+  }
+}
+
+// fonts
+
+:root {
+  --f-regular: "NeueMontreal-Regular";
+  --f-medium: "NeueMontreal-Medium";
+  --f-light: "NeueMontreal-Light";
+  --f-bold: "NeueMontreal-Bold";
+}
+
+// transitions
+
+:root {
+  --transition: 0.5s ease-in-out;
+  --transition-fast: 0.3s ease-in-out;
+  --transition-slow: 0.8s ease-in-out;
+  --default-ease: cubic-bezier(0.24, 1, 0.36, 1);
+}
+
+// easings
+:root {
+  // when animating an object on the screen, it doesn't appear and disappear, just changes shape
+  --custom-ease-in-out: cubic-bezier(0.76, 0, 0.24, 1);
+  // when animating the appearance of objects
+  --custom-ease-out: cubic-bezier(0.25, 1, 0.5, 1);
+  // when animating the disappearance of objects
+  --custom-ease-in: cubic-bezier(0.5, 0, 0.75, 0);
+  --custom-ease: cubic-bezier(0.25, 0.1, 0.25, 1);
+  // when animating the appearance of text
+  --custom-ease-write: cubic-bezier(0.333, 0, 0.667, 1);
+  --custom-ease-dive-in: cubic-bezier(0.6, 0, 0, 1);
+}
+
+// durations
+:root {
+  --dur-s: 0.4s;
+  --dur-m: 0.8s;
+  --dur-l: 1.2s;
+  --dur-delay-reveal: 0.3s;
+}
+
+// colors
+
+:root {
+  --c-black: #060606;
+  --c-white: #ffffff;
+}

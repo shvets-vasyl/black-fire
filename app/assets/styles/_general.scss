@@ -1,0 +1,202 @@
+@use "./utils/functions" as *;
+@use "./utils/mixins" as *;
+
+// -----------------------------------------------------------------------------
+// Base
+// -----------------------------------------------------------------------------
+
+html,
+body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+  -webkit-user-drag: none;
+  font-size: vw(16);
+  background: var(--c-black);
+  color: var(--c-white);
+  font-family: var(--f-regular);
+
+  .mobile-device {
+    @include mobile() {
+      @media screen and (orientation: landscape) {
+        overflow: hidden !important;
+        pointer-events: none !important;
+        height: 100svh;
+
+        #rotate-plash {
+          opacity: 1;
+          visibility: visible;
+        }
+
+        #__nuxt {
+          opacity: 0;
+        }
+      }
+    }
+  }
+}
+
+body {
+  position: relative;
+  overscroll-behavior: none;
+}
+
+::selection {
+  color: var(--c-black);
+  background: var(--c-white);
+}
+
+*,
+*:after,
+*:before {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+button,
+a {
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+// -----------------------------------------------------------------------------
+// Shared utilities
+// -----------------------------------------------------------------------------
+
+@keyframes ticker {
+  0% {
+    transform: translateX(0%);
+  }
+
+  100% {
+    transform: translateX(-100%);
+  }
+}
+
+// Fill parent for inline SVG icons
+.inner-svg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+// Absolute cover media inside a relative wrapper
+.inner-media {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+// -----------------------------------------------------------------------------
+// Lenis smooth scroll
+// -----------------------------------------------------------------------------
+
+html.lenis {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+.lenis.lenis-scrolling iframe {
+  pointer-events: none;
+}
+
+// -----------------------------------------------------------------------------
+// Common animations (useCommonAnimations + SplitText)
+// -----------------------------------------------------------------------------
+
+// SplitText output
+.split-word,
+.split-char {
+  display: inline-block;
+  will-change: transform;
+}
+
+.split-line {
+  display: block;
+  will-change: transform;
+}
+
+.split-word-mask,
+.split-char-mask {
+  display: inline-block;
+  line-height: inherit;
+  vertical-align: top;
+}
+
+.split-line-mask {
+  display: block;
+  line-height: inherit;
+  vertical-align: top;
+}
+
+// Scroll parallax wrapper: clips media that moves on Y
+[data-anim-parallax] {
+  overflow: hidden;
+}
+
+[data-anim-parallax] > img,
+[data-anim-parallax] > video,
+[data-anim-parallax] > [data-anim-parallax-media] {
+  will-change: transform;
+  transform-origin: center center;
+}
+
+// -----------------------------------------------------------------------------
+// Section themes
+// -----------------------------------------------------------------------------
+
+.sect-dark {
+  background: var(--c-black);
+  color: var(--c-white);
+}
+
+.sect-white {
+  background: var(--c-white);
+  color: var(--c-black);
+}
+
+// -----------------------------------------------------------------------------
+// Sticky full-viewport sections
+// -----------------------------------------------------------------------------
+
+.sticky {
+  position: sticky;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+}
+
+// -----------------------------------------------------------------------------
+// Mobile adaptation: desktop/mobile block toggles
+// -----------------------------------------------------------------------------
+
+.desktop-only {
+  @include mobile {
+    display: none !important;
+  }
+}
+
+.mobile-only {
+  display: none !important;
+
+  @include mobile {
+    display: flex !important;
+  }
+}

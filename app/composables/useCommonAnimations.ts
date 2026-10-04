@@ -5,41 +5,23 @@ import {
   animateTitleDefault,
 } from "~/utils/animations"
 
-let fitTextsCleanup: (() => void) | null = null
-
 const isViewportHidden = (el: Element) =>
   !!el.closest(".is-mobile-hidden") || el.closest("[inert]") != null
+
+let headerThemeTriggers: ScrollTrigger[] = []
 
 export function useCommonAnimations() {
   if (!import.meta.client) return
 
-  initFitTexts()
   initAnimTitles()
   initAnimTexts()
   initAnimFades()
   initAnimParallax()
-}
-
-const fitTexts = () => {
-  document.querySelectorAll<HTMLElement>("[data-fit-text]").forEach((el) => {
-    fitText(el)
-  })
-}
-
-const initFitTexts = () => {
-  fitTextsCleanup?.()
-
-  fitTexts()
-
-  window.addEventListener("resize", fitTexts)
-
-  fitTextsCleanup = () => {
-    window.removeEventListener("resize", fitTexts)
-  }
+  initHeaderTheme()
 }
 
 const initAnimTitles = () => {
-  const titles = document.querySelectorAll<SplittedHtmlElement>("[data-anim-title]")
+  const titles = document.querySelectorAll("[data-anim-title]")
 
   titles.forEach((title) => {
     if (isViewportHidden(title)) return
@@ -57,7 +39,7 @@ const initAnimTitles = () => {
 }
 
 const initAnimTexts = () => {
-  const texts = document.querySelectorAll<SplittedHtmlElement>("[data-anim-text]")
+  const texts = document.querySelectorAll("[data-anim-text]")
 
   texts.forEach((text) => {
     if (isViewportHidden(text)) return
@@ -99,4 +81,37 @@ const initAnimParallax = () => {
     if (isViewportHidden(wrap)) return
     animateParallaxDefault(wrap)
   })
+}
+
+const initHeaderTheme = () => {
+  const header = document.querySelector<HTMLElement>("[data-header]")
+  if (!header) return
+
+  headerThemeTriggers.forEach((trigger) => trigger.kill())
+  headerThemeTriggers = []
+
+  const isBlack = useState("header-is-black", () => false)
+  const active = new Set<HTMLElement>()
+
+  const apply = () => {
+    isBlack.value = active.size > 0
+  }
+
+  document.querySelectorAll<HTMLElement>("[data-header-black]").forEach((section) => {
+    const trigger = ScrollTrigger.create({
+      trigger: section,
+      start: () => `top ${header.offsetHeight}px`,
+      end: () => `bottom ${header.offsetHeight}px`,
+      onToggle: (self) => {
+        if (self.isActive) active.add(section)
+        else active.delete(section)
+        apply()
+      },
+    })
+
+    if (trigger.isActive) active.add(section)
+    headerThemeTriggers.push(trigger)
+  })
+
+  apply()
 }

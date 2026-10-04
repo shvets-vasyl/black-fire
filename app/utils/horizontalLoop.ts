@@ -9,6 +9,7 @@ export interface HorizontalLoopConfig {
   snap?: number | false
   center?: boolean | gsap.DOMTarget
   draggable?: boolean
+  allowNativeTouchScrolling?: boolean
   onChange?: (element: HTMLElement, index: number) => void
 }
 
@@ -20,6 +21,7 @@ export interface HorizontalLoopTimeline extends gsap.core.Timeline {
   closestIndex: (setCurrent?: boolean) => number
   times: number[]
   draggable?: Draggable
+  revertLoop: () => void
 }
 
 export function horizontalLoop(
@@ -37,7 +39,7 @@ export function horizontalLoop(
 
   let timeline!: HorizontalLoopTimeline
 
-  gsap.context(() => {
+  const ctx = gsap.context(() => {
     const onChange = config.onChange
     let lastIndex = 0
 
@@ -87,6 +89,7 @@ export function horizontalLoop(
     let totalWidth = 0
     let timeWrap: (value: number) => number = gsap.utils.wrap(0, 1)
     let proxy: HTMLDivElement | undefined
+    let stopAutoplay: (() => void) | undefined
 
     const getTotalWidth = () =>
       lastItem.offsetLeft +
@@ -262,16 +265,118 @@ export function horizontalLoop(
       const wrap = gsap.utils.wrap(0, 1)
       let ratio = 0
       let startProgress = 0
-      let wasPlaying = false
+      let playForward = !config.reversed
+      let autoplay = !config.paused
+      let gesture = false
+      let pressPointerX = 0
+      let gestureFrame = 0
+      let lastTick = gsap.ticker.time
+      let coasting = false
+      let coastIdle = 0
+      let coastProgress = 0
+
+      const pauseTimeline = tl.pause.bind(tl)
+
+      const setDirection = (delta: number) => {
+        if (Math.abs(delta) < 6) return
+        playForward = delta > 0
+      }
+
+      const stepAutoplay = () => {
+        const now = gsap.ticker.time
+        const delta = now - lastTick
+        lastTick = now
+
+        if (
+          gesture &&
+          !coasting &&
+          tl.draggable &&
+          !tl.draggable.isPressed &&
+          gsap.ticker.frame > gestureFrame
+        ) {
+          gesture = false
+        }
+
+        if (coasting) {
+          const progress = tl.progress()
+          if (Math.abs(progress - coastProgress) > 0.0003) {
+            coastProgress = progress
+            coastIdle = 0
+          } else if (++coastIdle > 8) {
+            finishCoast()
+          }
+          return
+        }
+
+        if (delta <= 0 || !autoplay || gesture) return
+
+        const duration = tl.duration()
+        if (!duration) return
+
+        const step = Math.min(delta, 0.05)
+        const next = tl.time() + step * (playForward ? 1 : -1)
+        tl.time(((next % duration) + duration) % duration)
+      }
+
+      const keepAlive = gsap.to({}, { duration: 1, repeat: -1, ease: "none" })
+
+      const trigger = firstItem.parentNode as HTMLElement
+
+      const holdGesture = (event: PointerEvent) => {
+        if (event.button !== 0) return
+        gesture = true
+        gestureFrame = gsap.ticker.frame
+        pressPointerX = event.pageX
+      }
+
+      const finishCoast = () => {
+        const draggable = tl.draggable
+        if (draggable?.isThrowing && !draggable.isPressed) draggable.tween?.kill()
+        coasting = false
+        gesture = false
+        lastTick = gsap.ticker.time
+      }
+
+      const releaseGesture = () => {
+        if (coasting) return
+        gesture = false
+        lastTick = gsap.ticker.time
+      }
+
+      gsap.ticker.add(stepAutoplay)
+      trigger.addEventListener("pointerdown", holdGesture)
+      window.addEventListener("pointerup", releaseGesture)
+      window.addEventListener("pointercancel", releaseGesture)
+      stopAutoplay = () => {
+        keepAlive.kill()
+        gsap.ticker.remove(stepAutoplay)
+        trigger.removeEventListener("pointerdown", holdGesture)
+        window.removeEventListener("pointerup", releaseGesture)
+        window.removeEventListener("pointercancel", releaseGesture)
+      }
+
+      tl.pause = () => {
+        autoplay = false
+        if (!tl.draggable?.isPressed) finishCoast()
+        return tl
+      }
+
+      tl.resume = () => {
+        autoplay = true
+        gesture = false
+        lastTick = gsap.ticker.time
+        return tl
+      }
 
       const created = Draggable.create(proxy, {
         trigger: firstItem.parentNode as Element,
         type: "x",
-        allowNativeTouchScrolling: false,
+        cursor: "grab",
+        activeCursor: "grabbing",
+        allowNativeTouchScrolling: config.allowNativeTouchScrolling ?? false,
         onPressInit() {
           gsap.killTweensOf(tl)
-          wasPlaying = !tl.paused()
-          tl.pause()
+          pauseTimeline()
           startProgress = tl.progress()
           refresh()
           ratio = 1 / totalWidth
@@ -288,37 +393,61 @@ export function horizontalLoop(
           }
         },
         onDrag() {
-          const instance = tl.draggable
-          if (!instance) return
-          tl.progress(wrap(startProgress + (instance.startX - instance.x) * ratio))
+          setDirection(pressPointerX - this.pointerX)
+          tl.progress(wrap(startProgress + (this.startX - this.x) * ratio))
         },
         onThrowUpdate() {
-          const instance = tl.draggable
-          if (!instance) return
-          tl.progress(wrap(startProgress + (instance.startX - instance.x) * ratio))
+          if (!Number.isFinite(this.x)) return
+          tl.progress(wrap(startProgress + (this.startX - this.x) * ratio))
         },
-        overshootTolerance: 0,
         inertia: true,
-        snap(value) {
-          const time = -(value * ratio) * tl.duration()
-          const wrappedTime = timeWrap(time)
-          const snapTime =
-            times[getClosest(times, wrappedTime, tl.duration())] ?? wrappedTime
-          let dif = snapTime - wrappedTime
+        minDuration: 0.2,
+        maxDuration: 1.2,
+        overshootTolerance: 0,
+        snap:
+          config.snap === false
+            ? undefined
+            : (value: number) => {
+                const time = -(value * ratio) * tl.duration()
+                const wrappedTime = timeWrap(time)
+                const snapTime =
+                  times[getClosest(times, wrappedTime, tl.duration())] ?? wrappedTime
+                let dif = snapTime - wrappedTime
 
-          if (Math.abs(dif) > tl.duration() / 2) {
-            dif += dif < 0 ? tl.duration() : -tl.duration()
+                if (Math.abs(dif) > tl.duration() / 2) {
+                  dif += dif < 0 ? tl.duration() : -tl.duration()
+                }
+
+                return (time + dif) / tl.duration() / -ratio
+              },
+        onRelease() {
+          setDirection(pressPointerX - this.pointerX)
+          indexIsDirty = true
+          tl.closestIndex(true)
+
+          const tween = this.tween
+          const throwMoves =
+            this.isThrowing &&
+            !!tween &&
+            tween.isActive() &&
+            tween.duration() > 0 &&
+            tween.progress() < 1
+
+          if (throwMoves) {
+            coasting = true
+            gesture = true
+            coastIdle = 0
+            coastProgress = tl.progress()
+            return
           }
 
-          return (time + dif) / tl.duration() / -ratio
+          finishCoast()
         },
-        onRelease() {
-          tl.closestIndex(true)
-          if (tl.draggable?.isThrowing) indexIsDirty = true
+        onThrowComplete() {
+          finishCoast()
         },
-        onThrowComplete: () => {
-          tl.closestIndex(true)
-          if (wasPlaying) tl.play()
+        onDragEnd() {
+          setDirection(pressPointerX - this.pointerX)
         },
       })[0]
 
@@ -336,8 +465,14 @@ export function horizontalLoop(
       onChange?.(currentItem, curIndex)
     }
 
-    return () => window.removeEventListener("resize", onResize)
+    return () => {
+      stopAutoplay?.()
+      window.removeEventListener("resize", onResize)
+      tl.draggable?.kill()
+    }
   })
+
+  timeline.revertLoop = () => ctx.revert()
 
   return timeline
 }

@@ -13,12 +13,19 @@ const getMedia = (wrap: HTMLElement) =>
   wrap.querySelector<HTMLElement>("img, video") ||
   (wrap.firstElementChild as HTMLElement | null)
 
+const readPositive = (raw: string | null) => {
+  const parsed = raw ? Number(raw) : NaN
+  return Number.isFinite(parsed) && parsed > 0 ? parsed : undefined
+}
+
 const getAmount = (wrap: HTMLElement, amount?: number) => {
   if (amount !== undefined) return amount
+  return readPositive(wrap.getAttribute("data-anim-parallax")) ?? DEFAULT_AMOUNT
+}
 
-  const raw = wrap.getAttribute("data-anim-parallax")
-  const parsed = raw ? Number(raw) : NaN
-  return Number.isFinite(parsed) && parsed > 0 ? parsed : DEFAULT_AMOUNT
+const getScale = (wrap: HTMLElement, scale?: number) => {
+  if (scale !== undefined) return scale
+  return readPositive(wrap.getAttribute("data-anim-parallax-scale")) ?? DEFAULT_SCALE
 }
 
 export const animateParallaxDefault = (wrap: HTMLElement, options: Options = {}) => {
@@ -26,7 +33,7 @@ export const animateParallaxDefault = (wrap: HTMLElement, options: Options = {})
   if (!media) return null
 
   const amount = getAmount(wrap, options.amount)
-  const scale = options.scale ?? DEFAULT_SCALE
+  const scale = getScale(wrap, options.scale)
 
   return gsap.fromTo(
     media,

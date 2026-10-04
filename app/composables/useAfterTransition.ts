@@ -1,16 +1,22 @@
 export function useAfterTransition(fn: () => void) {
-  const preloaderDone = useState("preloader-done")
-  const transitionDone = useState("transition-done")
+  const preloaderDone = useState("preloader-done", () => false)
+  const transitionDone = useState("transition-done", () => false)
+
+  let started = false
 
   const run = async () => {
+    if (started) return
+    started = true
+
     await document.fonts.ready
     fn()
   }
 
-  watch(transitionDone, (ready) => {
-    if (ready) void run()
+  watch([preloaderDone, transitionDone], ([preloader, transition]) => {
+    if (preloader || transition) void run()
   })
-  watch(preloaderDone, (ready) => {
-    if (ready) void run()
+
+  onMounted(() => {
+    if (preloaderDone.value || transitionDone.value) void run()
   })
 }

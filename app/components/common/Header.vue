@@ -28,7 +28,7 @@
 
     <div class="info">
       <CommonSubtitle :text="cityTime" />
-      <CommonLinkTemplate text="let's talk" href="#" external show-line>
+      <CommonLinkTemplate text="let's talk" href="#" show-line @click.prevent="openConnect">
         <IconPlus />
       </CommonLinkTemplate>
     </div>
@@ -63,9 +63,8 @@
         <CommonLinkTemplate
           text="let's talk"
           href="#"
-          external
           show-line
-          @click="closeMenu"
+          @click.prevent="onTalkClick"
         >
           <IconPlus />
         </CommonLinkTemplate>
@@ -88,6 +87,7 @@ const nav = [
 
 const isBlack = useState("header-is-black", () => false)
 const { onSectionClick } = useScrollToSection()
+const { open: openConnect } = useConnectPopup()
 
 const isMenuOpen = ref(false)
 
@@ -106,6 +106,11 @@ const toggleMenu = () => {
 const closeMenu = () => {
   if (!isMenuOpen.value) return
   toggleMenu()
+}
+
+const onTalkClick = () => {
+  closeMenu()
+  openConnect()
 }
 
 const onLogoClick = (event: MouseEvent) => {

@@ -44,7 +44,7 @@
           </div>
         </div>
 
-        <CommonButtonTemplate data-anim-fade text="let's talk" black />
+        <CommonButtonTemplate data-anim-fade text="let's talk" black @click="openConnect" />
       </div>
     </div>
   </section>
@@ -80,6 +80,7 @@ const items = [
   },
 ]
 
+const { open: openConnect } = useConnectPopup()
 const sectionRef = ref<HTMLElement | null>(null)
 const activeIndex = ref(0)
 const { isMobile } = useViewport()

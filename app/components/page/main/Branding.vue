@@ -11,13 +11,15 @@
       </h3>
 
       <div data-anim-fade>
-        <CommonButtonTemplate text="let's talk" />
+        <CommonButtonTemplate text="let's talk" @click="openConnect" />
       </div>
     </div>
   </section>
 </template>
 
-<script setup lang="ts"></script>
+<script setup lang="ts">
+const { open: openConnect } = useConnectPopup()
+</script>
 
 <style scoped lang="scss">
 .branding {

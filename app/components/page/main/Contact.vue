@@ -15,7 +15,7 @@
 
     <h1 class="title h1" data-anim-title>Have a project in mind?</h1>
 
-    <CommonButtonTemplate data-anim-fade text="Let's spark it" />
+    <CommonButtonTemplate data-anim-fade text="Let's spark it" @click="openConnect" />
 
     <footer class="footer">
       <p class="copy p2">© {{ new Date().getFullYear() }} black.fire WORLD WIDE, INC.</p>
@@ -57,6 +57,7 @@
 
 <script setup lang="ts">
 const { onSectionClick } = useScrollToSection()
+const { open: openConnect } = useConnectPopup()
 
 const services = ["Branding", "NFT", "Websites", "Applications"]
 const nav = [

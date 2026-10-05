@@ -2,6 +2,7 @@
   <div class="wrapper">
     <CommonPreloader />
     <NuxtPage />
+    <CommonConnectPopup />
   </div>
 </template>
 

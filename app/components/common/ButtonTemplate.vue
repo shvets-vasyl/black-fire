@@ -18,12 +18,13 @@ const props = defineProps<{
   href?: string
   external?: boolean
   black?: boolean
+  submit?: boolean
 }>()
 
 const tag = computed(() => (props.href ? "a" : "button"))
 
 const controlAttrs = computed(() => {
-  if (!props.href) return { type: "button" }
+  if (!props.href) return { type: props.submit ? "submit" : "button" }
 
   if (!props.external) return { href: props.href }
 

@@ -26,7 +26,7 @@ const finish = () => {
   if (preloaderDone.value) return
   hiding.value = true
   preloaderDone.value = true
-  lenis.value?.start()
+  if (!useState<boolean>("connect-popup-open").value) lenis.value?.start()
   removeTimer = window.setTimeout(() => {
     shown.value = false
   }, FADE + 50)

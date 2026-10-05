@@ -321,12 +321,41 @@ export function horizontalLoop(
       const keepAlive = gsap.to({}, { duration: 1, repeat: -1, ease: "none" })
 
       const trigger = firstItem.parentNode as HTMLElement
+      let pressClientX = 0
+      let pressClientY = 0
+      let touchAxis: "x" | "y" | null = null
+
+      const setPanY = (el: Element) => {
+        if (el instanceof HTMLElement) el.style.touchAction = "pan-y"
+        for (const child of el.children) setPanY(child)
+      }
 
       const holdGesture = (event: PointerEvent) => {
         if (event.button !== 0) return
         gesture = true
         gestureFrame = gsap.ticker.frame
         pressPointerX = event.pageX
+        pressClientX = event.clientX
+        pressClientY = event.clientY
+        touchAxis = null
+      }
+
+      const claimTouchAxis = (event: TouchEvent) => {
+        const touch = event.touches[0]
+        if (!touch) return
+
+        if (!touchAxis) {
+          const dx = Math.abs(touch.clientX - pressClientX)
+          const dy = Math.abs(touch.clientY - pressClientY)
+          if (dx < 8 && dy < 8) return
+          touchAxis = dx > dy ? "x" : "y"
+          if (touchAxis === "y") {
+            gesture = false
+            lastTick = gsap.ticker.time
+          }
+        }
+
+        if (touchAxis === "x") event.stopPropagation()
       }
 
       const finishCoast = () => {
@@ -345,12 +374,14 @@ export function horizontalLoop(
 
       gsap.ticker.add(stepAutoplay)
       trigger.addEventListener("pointerdown", holdGesture)
+      trigger.addEventListener("touchmove", claimTouchAxis)
       window.addEventListener("pointerup", releaseGesture)
       window.addEventListener("pointercancel", releaseGesture)
       stopAutoplay = () => {
         keepAlive.kill()
         gsap.ticker.remove(stepAutoplay)
         trigger.removeEventListener("pointerdown", holdGesture)
+        trigger.removeEventListener("touchmove", claimTouchAxis)
         window.removeEventListener("pointerup", releaseGesture)
         window.removeEventListener("pointercancel", releaseGesture)
       }
@@ -374,6 +405,7 @@ export function horizontalLoop(
         cursor: "grab",
         activeCursor: "grabbing",
         allowNativeTouchScrolling: config.allowNativeTouchScrolling ?? false,
+        minimumMovement: 8,
         onPressInit() {
           gsap.killTweensOf(tl)
           pauseTimeline()
@@ -393,11 +425,12 @@ export function horizontalLoop(
           }
         },
         onDrag() {
+          if (touchAxis === "y") return
           setDirection(pressPointerX - this.pointerX)
           tl.progress(wrap(startProgress + (this.startX - this.x) * ratio))
         },
         onThrowUpdate() {
-          if (!Number.isFinite(this.x)) return
+          if (touchAxis === "y" || !Number.isFinite(this.x)) return
           tl.progress(wrap(startProgress + (this.startX - this.x) * ratio))
         },
         inertia: true,
@@ -421,6 +454,12 @@ export function horizontalLoop(
                 return (time + dif) / tl.duration() / -ratio
               },
         onRelease() {
+          if (touchAxis === "y") {
+            this.tween?.kill()
+            finishCoast()
+            return
+          }
+
           setDirection(pressPointerX - this.pointerX)
           indexIsDirty = true
           tl.closestIndex(true)
@@ -454,6 +493,9 @@ export function horizontalLoop(
       if (!created) {
         throw new Error("horizontalLoop: failed to create Draggable")
       }
+
+      if (config.allowNativeTouchScrolling) setPanY(trigger)
+      trigger.setAttribute("data-lenis-prevent-horizontal", "")
 
       tl.draggable = created
     }

@@ -35,6 +35,7 @@ const items = [
   },
   {
     text: "The way the team captured the essence of the Giverr brand and translated it into a cohesive and functional design was particularly impressive.",
+    name: "Mauro Coelho",
     position: "Co-founder @ Team MHD",
     photo: "/images/review.webp",
   },
@@ -50,12 +51,18 @@ const items = [
 <style scoped lang="scss">
 .testimonials {
   padding-bottom: 14rem;
+  @include mobile {
+    padding-bottom: 10rem;
+  }
 }
 .head {
   padding: 0 1.5rem 4rem;
   display: flex;
   flex-direction: column;
   gap: 1rem;
+  @include mobile {
+    padding: 0 1rem 4rem;
+  }
 }
 
 .person-photo {
@@ -71,6 +78,9 @@ const items = [
   gap: 0.75rem;
   margin-top: auto;
   padding-top: 6rem;
+  @include mobile {
+    padding-top: 3rem;
+  }
 }
 .item-name,
 .item-position {
@@ -81,6 +91,10 @@ const items = [
 }
 .items {
   display: flex;
+  @include mobile {
+    flex-direction: column;
+    padding: 0 1rem;
+  }
 }
 .item-text {
   margin-top: 1rem;
@@ -89,8 +103,17 @@ const items = [
   display: flex;
   flex-direction: column;
   padding: 0 2rem 0 1.5rem;
+  @include mobile {
+    padding: 0;
+    padding-bottom: 1.5rem;
+  }
 }
 .item:not(:last-child) {
   border-right: 0.0625rem solid rgba(0, 0, 0, 0.1);
+  @include mobile {
+    border-right: none;
+    border-bottom: 0.0625rem solid rgba(0, 0, 0, 0.1);
+    margin-bottom: 1.5rem;
+  }
 }
 </style>

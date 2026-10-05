@@ -12,6 +12,10 @@
 .icon {
   width: 2.75rem;
   height: 2.75rem;
+  @include mobile {
+    width: 2.5rem;
+    height: 2.5rem;
+  }
 }
 .icon path {
   fill: currentColor;

@@ -29,10 +29,18 @@
   display: flex;
   width: 100%;
   gap: 1rem;
+  @include mobile {
+    padding: 0 1rem 1rem;
+    flex-direction: column;
+  }
 }
 .descr {
   flex: 1 1 auto;
   margin-top: 1.75rem;
+  @include mobile {
+    margin-top: 0;
+    order: 1;
+  }
 }
 .title-1,
 .title-2 {
@@ -40,5 +48,21 @@
   font-size: 12rem;
   text-transform: uppercase;
   line-height: 100%;
+  @include mobile {
+    font-size: 5.325rem;
+  }
+}
+.title-1 {
+  @include mobile {
+    order: 2;
+    margin-left: -0.25rem;
+  }
+}
+.title-2 {
+  @include mobile {
+    order: 3;
+    text-align: right;
+    margin-top: -1.35rem;
+  }
 }
 </style>

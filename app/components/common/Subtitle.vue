@@ -13,7 +13,7 @@ defineProps<{
 <style scoped lang="scss">
 .subtitle {
   position: relative;
-  padding-left: 0.625rem;
+  padding-left: 1rem;
 }
 .subtitle:after {
   content: "";
@@ -21,8 +21,8 @@ defineProps<{
   top: 50%;
   transform: translateY(-50%);
   left: 0;
-  width: 0.375rem;
-  height: 0.375rem;
+  width: 0.5rem;
+  height: 0.5rem;
   background-color: currentColor;
 }
 </style>

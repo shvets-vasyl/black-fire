@@ -24,6 +24,9 @@
   padding: 14rem 0 10rem;
   display: flex;
   justify-content: center;
+  @include mobile {
+    padding: 10rem 1rem 7rem;
+  }
 }
 .title {
   text-align: center;
@@ -34,5 +37,8 @@
   flex-direction: column;
   align-items: center;
   gap: 2rem;
+  @include mobile {
+    width: 100%;
+  }
 }
 </style>

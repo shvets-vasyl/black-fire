@@ -1,8 +1,10 @@
 <template>
   <section ref="sectionRef" class="brands">
-    <p class="title p2" data-anim-text>more than 100 brand have already trusted us</p>
+    <div class="title p2">
+      <p data-anim-text>more than 100 brand have already trusted us</p>
+    </div>
 
-    <div class="viewport" data-anim-fade>
+    <div class="viewport" data-anim-fade data-lenis-prevent-horizontal>
       <div ref="itemsRef" class="items">
         <div v-for="(brand, i) in brands" :key="`${brand}-${i}`" class="item">
           <img :src="brand" alt="" draggable="false" />
@@ -78,6 +80,9 @@ onBeforeUnmount(() => {
 <style scoped lang="scss">
 .brands {
   padding-bottom: 14rem;
+  @include mobile {
+    padding-bottom: 10rem;
+  }
 }
 .title {
   text-align: center;
@@ -102,10 +107,17 @@ onBeforeUnmount(() => {
   display: flex;
   align-items: center;
   justify-content: center;
+  @include mobile {
+    width: 12rem;
+    height: 12rem;
+  }
 }
 .item img {
   height: 2rem;
   width: auto;
   pointer-events: none;
+  @include mobile {
+    height: 1.5rem;
+  }
 }
 </style>

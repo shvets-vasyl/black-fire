@@ -36,13 +36,14 @@
       <div class="socials">
         <span v-for="(item, index) in socials" :key="index" class="socials-item">
           <CommonLinkTemplate :text="item.text" :href="item.link" external />
-          <span
-            v-if="index < socials.length - 1"
-            class="socials-comma p2"
-            aria-hidden="true"
-            >,</span
-          >
+          <span class="socials-comma p2" aria-hidden="true">,</span>
         </span>
+
+        <CommonLinkTemplate
+          class="mail-mob"
+          text="sayhi@black-fire.work"
+          href="mailto:sayhi@black-fire.work"
+        />
       </div>
 
       <CommonLinkTemplate
@@ -78,15 +79,25 @@ const socials = [
   text-align: center;
   position: relative;
   overflow: hidden;
+  @include mobile {
+    padding: 2rem 1rem;
+  }
 }
 .circle-wrap {
   position: absolute;
   bottom: 0;
   right: 0;
+  @include mobile {
+    bottom: -4rem;
+    right: -17rem;
+  }
 }
 .subtitle {
   width: 28.5rem;
   margin-bottom: 10.25rem;
+  @include mobile {
+    width: 100%;
+  }
 }
 .services {
   display: flex;
@@ -114,16 +125,34 @@ const socials = [
 .title {
   width: 49.8125rem;
   margin-bottom: 2.5rem;
+  @include mobile {
+    width: 100%;
+  }
 }
 .nav {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
   text-align: left;
+  @include mobile {
+    order: 1;
+  }
 }
 .socials {
   display: flex;
   gap: 1rem;
+  @include mobile {
+    order: 2;
+    flex-direction: column;
+    gap: 0.5rem;
+    text-align: left;
+  }
+}
+.socials-item:last-child .socials-comma {
+  display: none;
+  @include mobile {
+    display: inline;
+  }
 }
 .footer {
   display: flex;
@@ -131,5 +160,31 @@ const socials = [
   width: 100%;
   justify-content: space-between;
   margin-top: 14rem;
+  z-index: 2;
+  @include mobile {
+    margin-top: 10.875rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    column-gap: 0.75rem;
+    row-gap: 4rem;
+  }
+}
+.mail-mob {
+  display: none;
+  @include mobile {
+    display: inline-flex;
+  }
+}
+.mail {
+  @include mobile {
+    display: none;
+  }
+}
+.copy {
+  @include mobile {
+    order: 3;
+    grid-column: 1 / span 2;
+    text-align: left;
+  }
 }
 </style>

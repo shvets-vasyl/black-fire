@@ -15,6 +15,10 @@
 .icon {
   width: 3rem;
   height: 3rem;
+  @include mobile {
+    width: 2rem;
+    height: 2rem;
+  }
 }
 .icon path {
   stroke: currentColor;

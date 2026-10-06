@@ -22,8 +22,9 @@
         <span v-for="(item, index) in nav" :key="item.id" class="nav-item">
           <CommonLinkTemplate
             :text="item.text"
-            :href="`#${item.id}`"
-            @click="onSectionClick($event, item.id)"
+            :href="item.href"
+            :active="activeId === item.id"
+            @click="openNav($event, item.id)"
           />
           <span v-if="index < nav.length - 1" class="nav-comma p2" aria-hidden="true"
             >,</span
@@ -54,15 +55,10 @@
 </template>
 
 <script setup lang="ts">
-const { onSectionClick } = useScrollToSection()
+const { nav, activeId, openNav } = useSiteNav()
 const { open: openConnect } = useConnectPopup()
 
 const services = ["Branding", "NFT", "Websites", "Applications"]
-const nav = [
-  { id: "work", text: "Work" },
-  { id: "services", text: "Services" },
-  { id: "about", text: "About us" },
-]
 const socials = [
   { link: "https://t.me/porohdima", text: "tELEGRAM" },
   { link: "https://www.instagram.com/", text: "iNSTAGRAM" },

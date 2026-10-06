@@ -9,7 +9,7 @@
     <CommonLinkTemplate
       class="logo"
       text="black.fire"
-      href="#hero"
+      href="/#hero"
       @click="onLogoClick"
     />
 
@@ -17,8 +17,9 @@
       <span v-for="(item, index) in nav" :key="item.id" class="nav-item">
         <CommonLinkTemplate
           :text="item.text"
-          :href="`#${item.id}`"
-          @click="onSectionClick($event, item.id)"
+          :href="item.href"
+          :active="activeId === item.id"
+          @click="onNavClick($event, item.id)"
         />
         <span v-if="index < nav.length - 1" class="nav-comma p2" aria-hidden="true"
           >,</span
@@ -54,8 +55,9 @@
         <span v-for="(item, index) in nav" :key="item.id" class="nav-item">
           <CommonLinkTemplate
             :text="item.text"
-            :href="`#${item.id}`"
-            @click="onMenuSectionClick($event, item.id)"
+            :href="item.href"
+            :active="activeId === item.id"
+            @click="onNavClick($event, item.id)"
           />
           <span v-if="index < nav.length - 1" class="nav-comma" aria-hidden="true"
             >,</span
@@ -84,15 +86,17 @@ import { formatCityTime } from "~/utils/time/formatCityTime"
 const TIME_ZONE = "Europe/Riga"
 const CITY = "riga"
 
-const nav = [
-  { id: "work", text: "Work" },
-  { id: "services", text: "Services" },
-  { id: "about", text: "About us" },
-]
-
+const route = useRoute()
 const isBlack = useState("header-is-black", () => false)
-const { onSectionClick } = useScrollToSection()
+const { nav, activeId, openNav, openSection } = useSiteNav()
 const { open: openConnect } = useConnectPopup()
+
+watch(
+  () => route.path,
+  (path) => {
+    if (path !== "/") isBlack.value = false
+  }
+)
 
 const isMenuOpen = ref(false)
 
@@ -120,12 +124,12 @@ const onTalkClick = () => {
 
 const onLogoClick = (event: MouseEvent) => {
   closeMenu()
-  onSectionClick(event, "hero")
+  openSection(event, "hero")
 }
 
-const onMenuSectionClick = (event: MouseEvent, id: string) => {
+const onNavClick = (event: MouseEvent, id: string) => {
   closeMenu()
-  onSectionClick(event, id)
+  openNav(event, id)
 }
 
 onMounted(() => {

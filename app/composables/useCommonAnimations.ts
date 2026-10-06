@@ -97,7 +97,11 @@ const initHeaderTheme = () => {
     isBlack.value = active.size > 0
   }
 
-  document.querySelectorAll<HTMLElement>("[data-header-black]").forEach((section) => {
+  const page =
+    document.querySelector("main.page-enter-active") ??
+    document.querySelector("main:not(.page-leave-active)")
+
+  page?.querySelectorAll<HTMLElement>("[data-header-black]").forEach((section) => {
     const trigger = ScrollTrigger.create({
       trigger: section,
       start: () => `top ${header.offsetHeight}px`,

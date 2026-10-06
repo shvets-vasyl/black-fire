@@ -1,7 +1,5 @@
 <template>
   <main class="main-page">
-    <CommonHeader />
-
     <PageMainHero />
     <PageMainBranding />
     <PageMainBrands />
@@ -19,13 +17,20 @@
 </template>
 
 <script setup lang="ts">
+import type Lenis from "lenis"
 import { animateTextDefault, animateTitleDefault } from "~/utils/animations"
 import { transitionDurations } from "~/utils/gsap-autoimport"
+
+const route = useRoute()
+const lenis = useState<Lenis | null>("lenis")
+const { scrollToSection } = useScrollToSection()
+const headerIntroPlayed = useState("header-intro-played", () => false)
 
 const revealFirstScreen = () => {
   const header = document.querySelector<HTMLElement>("[data-header]")
 
-  if (header) {
+  if (header && !headerIntroPlayed.value) {
+    headerIntroPlayed.value = true
     gsap.fromTo(
       header,
       { yPercent: -100 },
@@ -49,7 +54,17 @@ const revealFirstScreen = () => {
 useAfterTransition(() => {
   useCommonAnimations()
   revealFirstScreen()
+
+  const id = route.hash.slice(1)
+  if (!id) return
+
+  lenis.value?.resize()
+  scrollToSection(id)
 })
 </script>
 
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+.main-page {
+  background: var(--c-black);
+}
+</style>

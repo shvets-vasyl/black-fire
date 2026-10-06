@@ -2,7 +2,7 @@
   <component
     :is="tag"
     class="link-template p2"
-    :class="{ 'is-lined': showLine }"
+    :class="{ 'is-lined': showLine, 'is-active': active }"
     v-bind="linkAttrs"
   >
     <span class="link-text">{{ text }}</span>
@@ -15,6 +15,7 @@ const props = defineProps<{
   text: string
   href?: string
   showLine?: boolean
+  active?: boolean
   external?: boolean
 }>()
 
@@ -23,7 +24,12 @@ const tag = computed(() => (props.href ? "a" : "span"))
 const linkAttrs = computed(() => {
   if (!props.href) return {}
 
-  if (!props.external) return { href: props.href }
+  if (!props.external) {
+    return {
+      href: props.href,
+      "aria-current": props.active ? "true" : undefined,
+    }
+  }
 
   return {
     href: props.href,
@@ -54,7 +60,8 @@ const linkAttrs = computed(() => {
   transform-origin: left center;
   transition: transform 0.4s var(--custom-ease-out);
 }
-.link-template.is-lined .link-text:after {
+.link-template.is-lined .link-text:after,
+.link-template.is-active .link-text:after {
   transform: scaleX(1);
 }
 @include hover {
@@ -63,6 +70,9 @@ const linkAttrs = computed(() => {
   }
   .link-template.is-lined:hover .link-text:after {
     transform: scaleX(0);
+  }
+  .link-template.is-active:hover .link-text:after {
+    transform: scaleX(1);
   }
 }
 </style>

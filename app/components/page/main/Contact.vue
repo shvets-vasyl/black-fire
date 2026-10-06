@@ -1,8 +1,6 @@
 <template>
   <section class="contact">
-    <div class="circle-wrap">
-      <IconCircle />
-    </div>
+    <div class="circle-wrap" />
 
     <p class="subtitle" data-anim-text>
       Your site, ads and your videos come from people who talk to each other daily — so it
@@ -85,12 +83,19 @@ const socials = [
   }
 }
 .circle-wrap {
+  width: 90rem;
+  height: 90rem;
   position: absolute;
-  bottom: 0;
-  right: 0;
+  border-radius: 100%;
+  background: #f00;
+  filter: blur(15.625rem);
+  right: -32.875rem;
+  top: 100%;
+  margin-top: -18.75rem;
   @include mobile {
-    bottom: -4rem;
-    right: -17rem;
+    right: auto;
+    left: 0;
+    margin-top: -25rem;
   }
 }
 .subtitle {

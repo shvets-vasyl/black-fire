@@ -28,7 +28,12 @@
 
     <div class="info">
       <CommonSubtitle :text="cityTime" />
-      <CommonLinkTemplate text="let's talk" href="#" show-line @click.prevent="openConnect">
+      <CommonLinkTemplate
+        text="let's talk"
+        href="#"
+        show-line
+        @click.prevent="openConnect"
+      >
         <IconPlus />
       </CommonLinkTemplate>
     </div>
@@ -230,7 +235,7 @@ onBeforeUnmount(() => {
   top: 0;
   left: 0;
   width: 100%;
-  height: 100vh;
+  height: 100dvh;
   display: none;
   flex-direction: column;
   justify-content: space-between;

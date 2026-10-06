@@ -1,3 +1,5 @@
+import { HTTPError } from "h3"
+
 type FormBody = {
   name?: string
   phoneCode?: string
@@ -8,20 +10,8 @@ type FormBody = {
   website?: string
 }
 
-async function readJsonBody(req: AsyncIterable<Uint8Array | string>) {
-  const chunks: Buffer[] = []
-
-  for await (const chunk of req) {
-    chunks.push(typeof chunk === "string" ? Buffer.from(chunk) : Buffer.from(chunk))
-  }
-
-  const raw = Buffer.concat(chunks).toString("utf8")
-  if (!raw) return {} as FormBody
-  return JSON.parse(raw) as FormBody
-}
-
 export default defineEventHandler(async (event) => {
-  const body = await readJsonBody(event.node.req)
+  const body = await readBody<FormBody>(event)
 
   if (String(body?.website ?? "").trim()) {
     return { ok: true }
@@ -38,7 +28,7 @@ export default defineEventHandler(async (event) => {
     : []
 
   if (!name || !phoneCode || !phone || !email || !services.length) {
-    throw createError({ statusCode: 400, statusMessage: "Invalid form data" })
+    throw HTTPError.status(400, "Invalid form data")
   }
 
   return { ok: true }

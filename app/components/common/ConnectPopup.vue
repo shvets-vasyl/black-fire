@@ -243,6 +243,13 @@ onUnmounted(() => {
   z-index: 3;
   overflow: hidden;
   transform: translateX(calc(100% + 0.75rem));
+  @include mobile {
+    right: 0.5rem;
+    width: calc(100% - 1rem);
+    height: calc(100% - 1rem);
+    top: 0.5rem;
+    transform: translateX(calc(100% + 0.5rem));
+  }
 }
 .popup-blur {
   background: rgba(0, 0, 0, 0.1);
@@ -263,6 +270,12 @@ onUnmounted(() => {
   align-items: center;
   justify-content: center;
   background: rgba(0, 0, 0, 0.05);
+  @include mobile {
+    top: 0.5rem;
+    width: 2.75rem;
+    right: 0;
+    background: none;
+  }
 }
 .close:deep(svg) {
   transition: transform var(--dur-m) var(--custom-ease-in-out);
@@ -286,17 +299,21 @@ onUnmounted(() => {
 
 .form-pane {
   padding: 2rem 1.5rem 1.5rem;
+  @include mobile {
+    padding: 3rem 1rem 1rem;
+  }
 }
 
 .title {
   margin-bottom: 6rem;
+  @include mobile {
+    margin-bottom: 3rem;
+  }
 }
-
-.descr {
-  text-align: center;
-  margin-bottom: 2.5rem;
-  font-size: 1rem;
-  line-height: 130%;
+.title br {
+  @include mobile {
+    display: none;
+  }
 }
 
 .thanks-pane {
@@ -311,6 +328,15 @@ onUnmounted(() => {
   width: 36.25rem;
   max-width: 100%;
   text-align: center;
+  @include mobile {
+    width: 100%;
+    padding: 0 1rem;
+  }
+}
+.thanks-text br {
+  @include mobile {
+    display: none;
+  }
 }
 .close-timer {
   position: absolute;

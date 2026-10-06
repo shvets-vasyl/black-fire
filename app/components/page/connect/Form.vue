@@ -277,6 +277,10 @@ const onSubmit = async () => {
   column-gap: 0.75rem;
   row-gap: 2rem;
   align-items: flex-start;
+  @include mobile {
+    grid-template-columns: 1fr;
+    row-gap: 1.5rem;
+  }
 }
 
 .phone-label {

@@ -386,6 +386,9 @@ onUnmounted(() => {
   font-size: 0.875rem;
   line-height: 130%;
 }
+input.search {
+  height: auto;
+}
 
 .search::placeholder {
   color: rgba(6, 6, 6, 0.35);

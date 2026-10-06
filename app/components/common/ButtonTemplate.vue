@@ -2,7 +2,7 @@
   <component
     :is="tag"
     class="btn-template"
-    :class="{ 'is-black': black }"
+    :class="{ 'is-black': black, 'is-grey': grey }"
     v-bind="controlAttrs"
   >
     <span class="btn-arrow">
@@ -18,6 +18,7 @@ const props = defineProps<{
   href?: string
   external?: boolean
   black?: boolean
+  grey?: boolean
   submit?: boolean
 }>()
 
@@ -65,6 +66,11 @@ const controlAttrs = computed(() => {
 .btn-template.is-black .btn-arrow,
 .btn-template.is-black .btn-text {
   background-color: var(--c-black);
+}
+
+.btn-template.is-grey .btn-arrow,
+.btn-template.is-grey .btn-text {
+  background-color: rgba(0, 0, 0, 0.05);
 }
 @include hover {
   .btn-template:hover .btn-arrow,

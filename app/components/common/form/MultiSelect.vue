@@ -29,7 +29,7 @@
         placeholder
       }}</span>
       <span v-else class="tags">
-        <span v-for="option in selectedOptions" :key="option.value" class="tag">
+        <span v-for="option in visibleOptions" :key="option.value" class="tag">
           <span>{{ option.label }}</span>
           <button
             class="tag-remove"
@@ -38,8 +38,15 @@
             @mousedown.stop.prevent
             @click.stop="remove(option.value)"
           >
-            <IconPlus />
+            <IconClose />
           </button>
+        </span>
+        <span
+          v-if="hiddenCount"
+          class="tag tag-more"
+          :aria-label="hiddenOptions.map((option) => option.label).join(', ')"
+        >
+          +{{ hiddenCount }}
         </span>
       </span>
       <IconCaret class="caret" />
@@ -108,6 +115,10 @@ const selectedOptions = computed(() =>
     .map((value) => props.options.find((option) => option.value === value))
     .filter((option): option is FormSelectOption => !!option)
 )
+
+const visibleOptions = computed(() => selectedOptions.value.slice(0, 2))
+const hiddenOptions = computed(() => selectedOptions.value.slice(2))
+const hiddenCount = computed(() => hiddenOptions.value.length)
 
 const optionId = (index: number) => `option-${uid}-${index}`
 
@@ -234,7 +245,6 @@ onUnmounted(() => {
   justify-content: space-between;
   gap: 0.75rem;
   width: 100%;
-  min-height: 1.1375rem;
   cursor: pointer;
   text-align: left;
 }
@@ -245,49 +255,56 @@ onUnmounted(() => {
 
 .tags {
   display: flex;
-  flex-wrap: wrap;
-  gap: 0.375rem;
+  flex-wrap: nowrap;
+  gap: 0.125rem;
   min-width: 0;
+  overflow: hidden;
 }
 
 .tag {
   display: inline-flex;
   align-items: center;
-  gap: 0.375rem;
+  gap: 0.125rem;
+  min-width: 0;
   padding: 0.25rem 0.5rem;
-  background: var(--c-black);
-  color: var(--c-white);
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 6.25rem;
+  color: var(--c-black);
   font-size: 0.75rem;
   line-height: 1rem;
 }
 
+.tag > span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tag-more {
+  flex-shrink: 0;
+}
+
 .tag-remove {
   display: flex;
+  flex-shrink: 0;
   color: inherit;
+  opacity: 0.5;
 }
 
 .tag-remove :deep(.icon) {
-  width: 0.5rem;
-  height: 0.5rem;
-  transform: rotate(45deg);
+  width: 1rem;
+  height: 1rem;
 }
 
 .caret {
   flex-shrink: 0;
-  color: inherit;
-  transform: rotate(90deg);
-  margin-right: 0.1875rem;
   transition:
     transform var(--transition-fast),
     color var(--transition-fast);
 }
 
-:deep(.caret.icon) {
-  width: 0.375rem;
-}
-
 .trigger.open .caret {
-  transform: rotate(-90deg);
+  transform: rotate(-180deg);
 }
 
 .dropdown {
@@ -300,7 +317,7 @@ onUnmounted(() => {
   overscroll-behavior: none;
   background: var(--c-white);
   color: var(--c-black);
-  border: 0.0625rem solid var(--c-black);
+  border: 0.0625rem solid rgba(0, 0, 0, 0.1);
   z-index: 8;
   outline: none;
 }

@@ -1,4 +1,6 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
+import { fileURLToPath } from "node:url"
+
 const SITE_NAME = "BLACK FIRE"
 const SITE_DESCRIPTION = "Marketing, film and web — made by one team, in one voice."
 
@@ -8,6 +10,26 @@ export default defineNuxtConfig({
   },
 
   compatibilityDate: "2025-07-15",
+
+  nitro: {
+    alias: {
+      // The hoisted h3 package is v2. Nitro still uses v1.
+      h3: fileURLToPath(
+        new URL(
+          "./node_modules/nitropack/node_modules/h3/dist/index.mjs",
+          import.meta.url
+        )
+      ),
+    },
+  },
+
+  runtimeConfig: {
+    mail: {
+      user: "sayhi@blackfire.studio",
+      pass: "",
+      to: "sayhi@blackfire.studio",
+    },
+  },
 
   devtools: { enabled: false },
 

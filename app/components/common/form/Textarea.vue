@@ -1,5 +1,6 @@
 <template>
   <CommonFormField
+    class="textarea"
     :error="error"
     :focused="focused"
     :filled="!!model"
@@ -56,6 +57,10 @@ const onBlur = () => {
 </script>
 
 <style scoped lang="scss">
+.textarea {
+  grid-column: 1 / -1;
+}
+
 textarea {
   min-height: 5rem;
   display: block;

@@ -21,7 +21,6 @@ export function useConnectPopup() {
     isOpen.value = false
     if (!import.meta.client) return
 
-    useLockScroll(false)
     if (route.query.form === undefined) return
 
     const query = { ...route.query }

@@ -13,86 +13,90 @@
       </label>
     </div>
 
-    <CommonFormInput
-      v-model="form.name"
-      label="Your contact name*"
-      placeholder="Jane Smith"
-      name="name"
-      autocomplete="name"
-      required
-      :error="visibleError('name')"
-      @blur="onBlur('name')"
-    />
+    <div class="fields">
+      <CommonFormInput
+        v-model="form.name"
+        label="Your contact name*"
+        placeholder="Jane Smith"
+        name="name"
+        autocomplete="name"
+        required
+        :error="visibleError('name')"
+        @blur="onBlur('name')"
+      />
 
-    <div class="phone">
-      <p class="phone-label">Your phone number**</p>
-      <div class="phone-row">
-        <CommonFormSelect
-          v-model="form.phoneCode"
-          class="code-select"
-          placeholder="Code"
-          name="phoneCode"
-          searchable
-          :options="codeOptions"
-          required
-          :error="visibleError('phoneCode')"
-          @blur="onBlur('phoneCode')"
-        />
-        <CommonFormInput
-          v-model="form.phone"
-          placeholder="(415) 555-0199"
-          name="phone"
-          type="tel"
-          inputmode="numeric"
-          autocomplete="tel-national"
-          digits-only
-          required
-          :error="visibleError('phone')"
-          @blur="onBlur('phone')"
-        />
+      <div class="phone">
+        <p class="phone-label p2">Your phone number<span class="mark">**</span></p>
+        <div class="phone-row">
+          <CommonFormSelect
+            v-model="form.phoneCode"
+            class="code-select"
+            placeholder="Code"
+            name="phoneCode"
+            searchable
+            :options="codeOptions"
+            required
+            :error="visibleError('phoneCode')"
+            @blur="onBlur('phoneCode')"
+          />
+          <CommonFormInput
+            v-model="form.phone"
+            placeholder="(415) 555-0199"
+            name="phone"
+            type="tel"
+            inputmode="numeric"
+            autocomplete="tel-national"
+            digits-only
+            required
+            :error="visibleError('phone')"
+            @blur="onBlur('phone')"
+          />
+        </div>
       </div>
+
+      <CommonFormInput
+        v-model="form.email"
+        label="Your e-mail*"
+        placeholder="jane@email.com"
+        name="email"
+        type="email"
+        autocomplete="email"
+        required
+        :error="visibleError('email')"
+        @blur="onBlur('email')"
+      />
+
+      <CommonFormMultiSelect
+        v-model="form.services"
+        label="What service are you interested in*"
+        placeholder="Select a service"
+        name="services"
+        :options="serviceOptions"
+        required
+        :error="visibleError('services')"
+        @blur="onBlur('services')"
+      />
+
+      <CommonFormTextarea
+        v-model="form.message"
+        label="Tell us about the project (optional)"
+        placeholder="Share your idea, goals or deadlines."
+        name="message"
+        :error="visibleError('message')"
+        @blur="onBlur('message')"
+      />
     </div>
 
-    <CommonFormInput
-      v-model="form.email"
-      label="Your e-mail*"
-      placeholder="jane@email.com"
-      name="email"
-      type="email"
-      autocomplete="email"
-      required
-      :error="visibleError('email')"
-      @blur="onBlur('email')"
-    />
-
-    <CommonFormMultiSelect
-      v-model="form.services"
-      label="What service are you interested in*"
-      placeholder="Select a service"
-      name="services"
-      :options="serviceOptions"
-      required
-      :error="visibleError('services')"
-      @blur="onBlur('services')"
-    />
-
-    <CommonFormTextarea
-      v-model="form.message"
-      label="Tell us about the project (optional)"
-      placeholder="Share your idea, goals or deadlines."
-      name="message"
-      :error="visibleError('message')"
-      @blur="onBlur('message')"
-    />
-
-    <CommonButtonTemplate
-      class="form-btn"
-      text="Send request"
-      black
-      submit
-      :disabled="isSubmitting"
-    />
-    <p v-if="submitError" class="submit-error">{{ submitError }}</p>
+    <div class="form-actions">
+      <CommonButtonTemplate
+        class="form-btn"
+        text="Send request"
+        black
+        submit
+        :disabled="isSubmitting"
+      />
+      <p v-if="submitError" class="submit-error">{{ submitError }}</p>
+    </div>
   </form>
 </template>
 
@@ -262,35 +266,79 @@ const onSubmit = async () => {
 .form {
   position: relative;
   width: 100%;
+  flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 1.75rem;
+}
+
+.fields {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: 0.75rem;
+  row-gap: 2rem;
+  align-items: flex-start;
 }
 
 .phone-label {
   margin-bottom: 0.75rem;
-  font-size: 0.875rem;
-  line-height: 130%;
-  letter-spacing: 0.02rem;
+  line-height: 1rem;
+}
+
+.mark {
+  color: var(--c-red);
+  font-size: 1rem;
+  line-height: 1;
 }
 
 .phone-row {
   display: grid;
-  grid-template-columns: 8rem 1fr;
-  gap: 1.5rem;
-  @include mobile {
-    gap: 0.75rem;
+  grid-template-columns: 6.5rem 1fr;
+  border-bottom: 0.0625rem solid rgba(0, 0, 0, 0.1);
+  transition: border-color var(--transition-fast);
+
+  &:has(.has-error) {
+    border-color: var(--c-red);
+  }
+
+  :deep(.field) {
+    border-bottom: none;
+  }
+
+  > :last-child :deep(input) {
+    padding-left: 0.75rem;
+  }
+
+  > :last-child :deep(.error) {
+    left: -6.5rem;
   }
 }
 
-.code-select :deep(.dropdown) {
-  min-width: 16rem;
+.code-select {
+  &::after {
+    content: "";
+    position: absolute;
+    top: 0.1875rem;
+    right: 0;
+    width: 0.0625rem;
+    height: 1rem;
+    background: rgba(0, 0, 0, 0.1);
+  }
+
+  :deep(.trigger) {
+    padding-right: 0.75rem;
+  }
+
+  :deep(.dropdown) {
+    min-width: 16rem;
+  }
+}
+
+.form-actions {
+  margin-top: auto;
+  padding-top: 2rem;
 }
 
 .form-btn {
-  align-self: center;
-  margin-top: 0.5rem;
-
   &:disabled {
     pointer-events: none;
     opacity: 0.5;

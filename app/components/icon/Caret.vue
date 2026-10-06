@@ -1,14 +1,16 @@
 <template>
-  <svg
-    class="icon icon-caret"
-    viewBox="0 0 6 10"
-    fill="none"
-    xmlns="http://www.w3.org/2000/svg"
-  >
-    <path
-      d="M0.901889 -9.53674e-07C1.13176 -9.53674e-07 1.36284 0.0864639 1.53855 0.259394L5.73523 4.36943C5.90492 4.53644 6 4.76267 6 4.99956C6 5.23526 5.90492 5.46149 5.73523 5.6285L1.53855 9.7409C1.18592 10.0868 0.615452 10.0868 0.26282 9.73853C-0.0886074 9.3903 -0.0874039 8.82769 0.265227 8.48183L3.81922 4.99956L0.265227 1.51728C-0.0874039 1.17142 -0.0886074 0.609991 0.26282 0.261764C0.438534 0.0864649 0.670814 -9.53674e-07 0.901889 -9.53674e-07Z"
-      fill="currentColor"
-    />
+  <svg class="icon" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <g opacity="0.5" clip-path="url(#clip0_2167_173)">
+      <path
+        d="M7.99999 8.70799L11.3 5.40799L12.2427 6.35066L7.99999 10.5933L3.75732 6.35066L4.69999 5.40799L7.99999 8.70799Z"
+        fill="currentColor"
+      />
+    </g>
+    <defs>
+      <clipPath id="clip0_2167_173">
+        <rect width="16" height="16" fill="currentColor" />
+      </clipPath>
+    </defs>
   </svg>
 </template>
 
@@ -16,6 +18,6 @@
 
 <style scoped lang="scss">
 .icon {
-  width: 0.375rem;
+  width: 1rem;
 }
 </style>

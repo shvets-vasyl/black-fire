@@ -146,7 +146,9 @@ const open = () => {
   if (isOpen.value) return
   isOpen.value = true
   query.value = ""
-  const selected = visibleOptions.value.findIndex((option) => option.value === model.value)
+  const selected = visibleOptions.value.findIndex(
+    (option) => option.value === model.value
+  )
   activeIndex.value = selected >= 0 ? selected : -1
   nextTick(() => {
     if (props.searchable) searchRef.value?.focus()
@@ -312,7 +314,6 @@ onUnmounted(() => {
   justify-content: space-between;
   gap: 0.75rem;
   width: 100%;
-  min-height: 1.1375rem;
   cursor: pointer;
   text-align: left;
 }
@@ -347,21 +348,17 @@ onUnmounted(() => {
 }
 
 .caret {
+  margin-right: 0.5rem;
+  margin-top: 0.125rem;
   flex-shrink: 0;
   color: inherit;
-  transform: rotate(90deg);
-  margin-right: 0.1875rem;
   transition:
     transform var(--transition-fast),
     color var(--transition-fast);
 }
 
-:deep(.caret.icon) {
-  width: 0.375rem;
-}
-
 .trigger.open .caret {
-  transform: rotate(-90deg);
+  transform: rotate(-180deg);
 }
 
 .dropdown {
@@ -375,7 +372,7 @@ onUnmounted(() => {
   overflow: hidden;
   background: var(--c-white);
   color: var(--c-black);
-  border: 0.0625rem solid var(--c-black);
+  border: 0.0625rem solid rgba(0, 0, 0, 0.1);
   z-index: 8;
 }
 

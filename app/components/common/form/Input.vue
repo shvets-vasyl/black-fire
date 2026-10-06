@@ -28,14 +28,7 @@
 
 <script setup lang="ts">
 type InputMode =
-  | "text"
-  | "search"
-  | "none"
-  | "email"
-  | "tel"
-  | "numeric"
-  | "url"
-  | "decimal"
+  "text" | "search" | "none" | "email" | "tel" | "numeric" | "url" | "decimal"
 
 const props = defineProps<{
   label?: string

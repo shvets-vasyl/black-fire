@@ -1,5 +1,3 @@
-import { HTTPError } from "h3"
-
 type FormBody = {
   name?: string
   phoneCode?: string
@@ -26,10 +24,29 @@ export default defineEventHandler(async (event) => {
   const services = Array.isArray(body?.services)
     ? body.services.map((item) => String(item).trim()).filter(Boolean)
     : []
+  const message = String(body?.message ?? "").trim()
 
-  if (!name || !phoneCode || !phone || !email || !services.length) {
-    throw HTTPError.status(400, "Invalid form data")
+  if (
+    !name ||
+    !phoneCode ||
+    !phone ||
+    !email ||
+    !services.length ||
+    message.length > 1000
+  ) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: "Invalid form data",
+    })
   }
+
+  await sendFormMail({
+    name,
+    phone: `+${phoneCode} ${phone}`,
+    email,
+    services,
+    message,
+  })
 
   return { ok: true }
 })

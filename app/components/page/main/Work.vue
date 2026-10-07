@@ -2,34 +2,30 @@
   <section id="work" ref="sectionRef" class="work">
     <div class="sticky">
       <div class="items">
-        <div
-          v-for="({ photo, title, descr, services, type, date }, i) in items"
-          :key="i"
-          class="item"
-        >
-          <img class="inner-media" :src="photo" :alt="title" />
+        <div v-for="(item, i) in items" :key="i" class="item">
+          <img class="inner-media" :src="item.photo" :alt="item.title" />
           <div class="item-content">
             <div class="item-left">
               <h2 class="item-title h2">
                 <div class="title-arrow">
                   <IconArrow2 />
                 </div>
-                <div class="title-text">{{ title }}</div>
+                <div class="title-text">{{ item.title }}</div>
               </h2>
-              <div class="item-descr" v-html="descr" />
+              <div class="item-descr" v-html="item.descr" />
             </div>
             <div class="item-right">
               <div class="item-services p2">
                 <p class="item-subtitle">Service</p>
-                <p class="item-text">{{ services }}</p>
+                <p class="item-text">{{ item.services }}</p>
               </div>
               <div class="item-type p2">
                 <p class="item-subtitle">Type</p>
-                <p class="item-text">{{ type }}</p>
+                <p class="item-text">{{ item.type }}</p>
               </div>
               <div class="item-date p2">
                 <p class="item-subtitle">Date</p>
-                <p class="item-text">{{ date }}</p>
+                <p class="item-text">{{ item.date }}</p>
               </div>
             </div>
           </div>
@@ -46,6 +42,11 @@
 </template>
 
 <script setup lang="ts">
+import { transitionDurations } from "~/utils/gsap-autoimport"
+
+const HIDDEN = "polygon(0% 100%, 100% 100%, 100% 100%, 0% 100%)"
+const SHOWN = "polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)"
+
 const sectionRef = ref<HTMLElement | null>(null)
 const activeIndex = ref(0)
 
@@ -59,13 +60,15 @@ useAfterTransition(() => {
   if (cards.length < 2) return
 
   ctx = gsap.context(() => {
-    cards.forEach((card, index) => {
-      gsap.set(card, {
-        zIndex: cards.length - index,
-        transformOrigin: "center bottom",
-      })
-    })
-    gsap.set(cards.slice(1), { scaleY: 0 })
+    const contents = cards.map((card) => card.querySelector(".item-content"))
+
+    cards.forEach((card, index) => gsap.set(card, { zIndex: index }))
+    gsap.set(cards.slice(1), { clipPath: HIDDEN })
+    gsap.set(contents.slice(1), { autoAlpha: 0 })
+    gsap.set(
+      cards.map((card) => card.querySelector("img")),
+      { yPercent: 8 }
+    )
 
     const steps = cards.length - 1
 
@@ -77,18 +80,34 @@ useAfterTransition(() => {
         scrub: true,
         onUpdate: (self) => {
           const next = Math.min(steps, Math.round(self.progress * steps))
-          if (activeIndex.value !== next) activeIndex.value = next
+          if (activeIndex.value === next) return
+
+          activeIndex.value = next
+          const content = contents[next]
+          if (!content) return
+
+          gsap.to(content, {
+            autoAlpha: 1,
+            duration: transitionDurations.durS,
+            ease: "custom.out",
+          })
         },
       },
     })
 
     cards.forEach((card, index) => {
       const next = cards[index + 1]
-      if (!next) return
+      const start = Math.max(0, index - 1)
+      const end = Math.min(steps, index + 1)
 
-      timeline
-        .to(card, { yPercent: -100, ease: "none", duration: 1 }, index)
-        .to(next, { scaleY: 1, ease: "none", duration: 1 }, index)
+      if (next) timeline.to(next, { clipPath: SHOWN, ease: "none", duration: 1 }, index)
+
+      timeline.fromTo(
+        card.querySelector("img"),
+        { yPercent: 8 },
+        { yPercent: -8, ease: "none", duration: end - start, immediateRender: false },
+        start
+      )
     })
   }, section)
 })
@@ -96,34 +115,33 @@ useAfterTransition(() => {
 onBeforeUnmount(() => {
   ctx?.revert()
 })
-
 const items = [
   {
     photo: "/images/projects.webp",
-    title: "Zinchenko",
+    title: "Aura",
     descr:
-      "NFT collection with Potap and Oleksandr Zinchenko: <br />3 animated cards, designed from scratch.",
-    services: "web development, marketing",
+      "Brand identity and digital experience for a modern beauty project: <br />a fresh visual concept built from scratch.",
+    services: "design, development",
     type: "beauty",
+    date: "2026",
+  },
+  {
+    photo: "/images/work/work-1.webp",
+    title: "Northline",
+    descr:
+      "Creative website for a contemporary fashion brand: <br />minimal design with a strong visual direction.",
+    services: "web development, production",
+    type: "fashion",
     date: "2025",
   },
   {
     photo: "/images/projects.webp",
-    title: "Zinchenko",
+    title: "Forma",
     descr:
-      "NFT collection with Potap and Oleksandr Zinchenko: <br />3 animated cards, designed from scratch.",
-    services: "web development, marketing",
-    type: "beauty",
-    date: "2025",
-  },
-  {
-    photo: "/images/projects.webp",
-    title: "Zinchenko",
-    descr:
-      "NFT collection with Potap and Oleksandr Zinchenko: <br />3 animated cards, designed from scratch.",
-    services: "web development, marketing",
-    type: "beauty",
-    date: "2025",
+      "Digital platform for a creative studio: <br />clean interface and engaging user experience.",
+    services: "design, marketing",
+    type: "technology",
+    date: "2026",
   },
 ]
 
@@ -143,11 +161,17 @@ const totalCount = computed(() => padCount(items.length))
 .item {
   position: absolute;
   inset: 0;
-  transform-origin: center bottom;
 
   &:not(:first-child) {
-    transform: scaleY(0);
+    clip-path: polygon(0% 100%, 100% 100%, 100% 100%, 0% 100%);
   }
+}
+.item .inner-media {
+  top: -12%;
+  height: 124%;
+}
+.item:not(:first-child) .item-content {
+  opacity: 0;
 }
 
 .item-content {

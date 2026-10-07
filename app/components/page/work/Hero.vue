@@ -49,7 +49,12 @@
         @keydown.space.prevent="openProject(item)"
       >
         <div class="item-photo">
-          <img class="inner-media" draggable="false" :src="item.photos[0]" :alt="item.name" />
+          <img
+            class="inner-media"
+            draggable="false"
+            :src="item.photos[0]"
+            :alt="item.name"
+          />
         </div>
 
         <div class="item-gradient" />
@@ -374,11 +379,9 @@ const projectsLabel = computed(() => {
   line-height: 100%;
   text-transform: uppercase;
   font-family: var(--f-medium);
-  transform: translateY(-1rem);
   opacity: 0;
-  transition:
-    transform var(--dur-m) var(--custom-ease-out),
-    opacity var(--dur-m) var(--custom-ease-out);
+  perspective: 6rem;
+  transition: opacity var(--dur-m) var(--custom-ease-out);
   @include mobile {
     opacity: 1;
     transform: none;
@@ -392,8 +395,18 @@ const projectsLabel = computed(() => {
   height: 1.5rem;
 }
 .title-arrow {
+  transform: rotateY(-68deg);
+  transform-origin: left center;
+  transition: transform var(--dur-m) var(--custom-ease-out);
   @include mobile {
     display: none;
+  }
+}
+.title-text {
+  transform: translate(-1.75rem);
+  transition: transform var(--dur-m) var(--custom-ease-out);
+  @include mobile {
+    transform: none;
   }
 }
 .item-details {
@@ -445,7 +458,6 @@ const projectsLabel = computed(() => {
     }
 
     .item-title {
-      transform: translateY(0);
       opacity: 1;
     }
 
@@ -455,6 +467,10 @@ const projectsLabel = computed(() => {
 
     .item-gradient {
       opacity: 1;
+    }
+    .title-arrow,
+    .title-text {
+      transform: none;
     }
   }
 }

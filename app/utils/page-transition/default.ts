@@ -26,7 +26,10 @@ export default function defaultTransition(
 
   const settle = () => {
     if (!entered || !left) return
-    if (!useState<boolean>("connect-popup-open").value) useLockScroll(false)
+    const popupOpen =
+      useState<boolean>("connect-popup-open").value ||
+      useState<boolean>("project-popup-open").value
+    if (!popupOpen) useLockScroll(false)
     transitionDone.value = true
   }
 

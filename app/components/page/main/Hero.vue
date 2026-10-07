@@ -1,6 +1,18 @@
 <template>
-  <section id="hero" class="hero" data-anim-parallax="10">
-    <img class="inner-media" src="/images/hero.webp" alt="" />
+  <section id="hero" class="hero">
+    <div class="media" data-anim-parallax="10">
+      <video
+        ref="videoEl"
+        class="inner-media"
+        src="/video/output.mp4"
+        autoplay
+        muted
+        loop
+        playsinline
+        preload="auto"
+        disablepictureinpicture
+      />
+    </div>
 
     <div class="content">
       <p ref="title1El" class="title-1">black</p>
@@ -18,6 +30,7 @@ import { animateTextDefault, animateTitleDefault } from "~/utils/animations"
 const title1El = ref<HTMLElement | null>(null)
 const title2El = ref<HTMLElement | null>(null)
 const descrEl = ref<HTMLElement | null>(null)
+const videoEl = ref<HTMLVideoElement | null>(null)
 
 let intros: gsap.core.Animation[] = []
 let pendingPlay = false
@@ -51,6 +64,11 @@ const playIntro = () => {
 }
 
 onMounted(async () => {
+  if (videoEl.value) {
+    videoEl.value.muted = true
+    videoEl.value.play().catch(() => {})
+  }
+
   await document.fonts.ready
   initIntro()
 })
@@ -71,6 +89,10 @@ onBeforeUnmount(() => {
   overflow: hidden;
   display: flex;
   align-items: flex-end;
+}
+.media {
+  position: absolute;
+  inset: 0;
 }
 
 .content {

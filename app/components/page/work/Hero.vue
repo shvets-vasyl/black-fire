@@ -42,6 +42,11 @@
         v-for="({ name, photo, services, year, category }, i) in visibleItems"
         :key="i"
         class="item"
+        role="button"
+        tabindex="0"
+        @click="openProject(name)"
+        @keydown.enter.prevent="openProject(name)"
+        @keydown.space.prevent="openProject(name)"
       >
         <div class="item-photo">
           <img class="inner-media" draggable="false" :src="photo" :alt="name" />
@@ -129,6 +134,7 @@ const items = [
 ]
 
 const filters = ["all", ...new Set(items.flatMap((item) => item.category))]
+const { open: openProject } = useProjectPopup()
 
 const active = ref("all")
 const filtersEl = ref<HTMLElement | null>(null)

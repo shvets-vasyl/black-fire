@@ -1,6 +1,6 @@
 <template>
   <div v-if="shown" class="popup" role="dialog" aria-modal="true" aria-label="Let's talk">
-    <div ref="blurRef" class="popup-blur" />
+    <div ref="blurRef" class="popup-blur" @click="close" />
 
     <div ref="containerRef" class="popup-container">
       <button ref="closeRef" class="close" type="button" @click="close">

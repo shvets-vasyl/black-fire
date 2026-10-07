@@ -4,6 +4,7 @@
     <CommonHeader />
     <NuxtPage />
     <CommonConnectPopup />
+    <CommonProjectPopup />
   </div>
 </template>
 

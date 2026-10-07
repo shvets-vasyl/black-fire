@@ -16,7 +16,7 @@
         </div>
       </div>
       <div class="right">
-        <div class="items" @pointerleave="onItemsLeave">
+        <div class="items">
           <div
             v-for="({ title, descr, photo }, i) in items"
             :key="i"
@@ -94,7 +94,6 @@ let lines: HTMLElement[] = []
 let refreshFrame = 0
 let active = 0
 let progress = 0
-let hovered = false
 let inView = false
 let visibilityTrigger: ScrollTrigger | null = null
 
@@ -113,7 +112,7 @@ const setActive = (index: number) => {
 }
 
 const onTick = () => {
-  if (!inView || hovered) return
+  if (!inView) return
 
   const delta = Math.min(gsap.ticker.deltaRatio(60), 2)
   progress += delta / (AUTO_DURATION * 60)
@@ -128,18 +127,12 @@ const onTick = () => {
 
 const onItemEnter = (index: number, event: PointerEvent) => {
   if (event.pointerType === "touch") return
-  hovered = true
   if (index !== active) setActive(index)
 }
 
 const onItemClick = (index: number) => {
   if (!isMobile.value) return
   if (index !== active) setActive(index)
-}
-
-const onItemsLeave = (event: PointerEvent) => {
-  if (event.pointerType === "touch") return
-  hovered = false
 }
 
 const onItemTransitionEnd = (event: TransitionEvent) => {
@@ -250,7 +243,7 @@ onBeforeUnmount(() => {
   }
 }
 .item-progress {
-  height: 0.0625rem;
+  height: 0.125rem;
   background: rgba(0, 0, 0, 0.1);
 }
 .progress-line {

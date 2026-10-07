@@ -1,5 +1,10 @@
 <template>
-  <section id="work" ref="sectionRef" class="work">
+  <section
+    id="work"
+    ref="sectionRef"
+    class="work"
+    :style="{ height: `${Math.max(items.length, 1) * 100}vh` }"
+  >
     <div class="sticky">
       <div class="items">
         <div v-for="(item, i) in items" :key="i" class="item">
@@ -115,45 +120,24 @@ useAfterTransition(() => {
 onBeforeUnmount(() => {
   ctx?.revert()
 })
-const items = [
-  {
-    photo: "/images/projects.webp",
-    title: "Aura",
-    descr:
-      "Brand identity and digital experience for a modern beauty project: <br />a fresh visual concept built from scratch.",
-    services: "design, development",
-    type: "beauty",
-    date: "2026",
-  },
-  {
-    photo: "/images/work/work-1.webp",
-    title: "Northline",
-    descr:
-      "Creative website for a contemporary fashion brand: <br />minimal design with a strong visual direction.",
-    services: "web development, production",
-    type: "fashion",
-    date: "2025",
-  },
-  {
-    photo: "/images/projects.webp",
-    title: "Forma",
-    descr:
-      "Digital platform for a creative studio: <br />clean interface and engaging user experience.",
-    services: "design, marketing",
-    type: "technology",
-    date: "2026",
-  },
-]
+const { data } = await useProjects()
+const items = computed(() =>
+  (data.value ?? []).map((item) => ({
+    photo: item.photos[0] ?? "",
+    title: item.name,
+    descr: item.descr,
+    services: item.services.join(", "),
+    type: item.category.join(", "),
+    date: item.year,
+  }))
+)
 
 const padCount = (value: number) => String(value).padStart(2, "0")
 const currentCount = computed(() => padCount(activeIndex.value + 1))
-const totalCount = computed(() => padCount(items.length))
+const totalCount = computed(() => padCount(items.value.length))
 </script>
 
 <style scoped lang="scss">
-.work {
-  height: 300vh;
-}
 .items {
   position: absolute;
   inset: 0;
@@ -188,6 +172,9 @@ const totalCount = computed(() => padCount(items.length))
   }
 }
 
+.item-descr:deep(p) {
+  margin: 0;
+}
 .item-descr:deep(br) {
   @include mobile {
     display: none;

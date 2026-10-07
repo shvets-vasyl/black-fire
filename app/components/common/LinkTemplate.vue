@@ -57,22 +57,26 @@ const linkAttrs = computed(() => {
   height: 0.0625rem;
   background-color: currentColor;
   transform: scaleX(0);
-  transform-origin: left center;
+  transform-origin: right center;
   transition: transform 0.4s var(--custom-ease-out);
 }
 .link-template.is-lined .link-text:after,
 .link-template.is-active .link-text:after {
   transform: scaleX(1);
+  transform-origin: left center;
 }
 @include hover {
   .link-template:hover .link-text:after {
     transform: scaleX(1);
+    transform-origin: left center;
   }
   .link-template.is-lined:hover .link-text:after {
     transform: scaleX(0);
+    transform-origin: right center;
   }
   .link-template.is-active:hover .link-text:after {
     transform: scaleX(1);
+    transform-origin: left center;
   }
 }
 </style>

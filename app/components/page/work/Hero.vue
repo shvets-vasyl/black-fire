@@ -37,10 +37,14 @@
       </p>
     </div>
 
-    <div ref="itemsEl" class="items">
+    <div
+      ref="itemsEl"
+      class="items"
+      :class="{ 'is-pair': visibleItems.length === 2 }"
+    >
       <div
         v-for="item in visibleItems"
-        :key="item.name"
+        :key="item.slug"
         class="item"
         role="button"
         tabindex="0"
@@ -91,11 +95,15 @@
 </template>
 
 <script setup lang="ts">
-import { projects as items } from "~/data/projects"
 import { animateFadeDefault, animateTitleDefault } from "~/utils/animations"
 import { transitionDurations } from "~/utils/gsap-autoimport"
 
-const filters = ["all", ...new Set(items.flatMap((item) => item.category))]
+const { data } = await useProjects()
+const items = computed(() => data.value ?? [])
+const filters = computed(() => [
+  "all",
+  ...new Set(items.value.flatMap((item) => item.category)),
+])
 const { open: openProject } = useProjectPopup()
 
 const active = ref("all")
@@ -136,8 +144,8 @@ const playIntro = () => {
 
 const visibleItems = computed(() =>
   active.value === "all"
-    ? items
-    : items.filter((item) => item.category.includes(active.value))
+    ? items.value
+    : items.value.filter((item) => item.category.includes(active.value))
 )
 
 const visibleCount = computed(() => visibleItems.value.length)
@@ -324,6 +332,16 @@ const projectsLabel = computed(() => {
     flex: auto;
   }
 }
+.items.is-pair .item {
+  flex: 1 1 calc(50% - 0.375rem);
+  width: calc(50% - 0.375rem);
+  max-width: calc(50% - 0.375rem);
+  @include mobile {
+    flex: auto;
+    width: 100%;
+    max-width: none;
+  }
+}
 .item-photo {
   position: relative;
   height: 100%;
@@ -380,7 +398,6 @@ const projectsLabel = computed(() => {
   text-transform: uppercase;
   font-family: var(--f-medium);
   opacity: 0;
-  perspective: 6rem;
   transition: opacity var(--dur-m) var(--custom-ease-out);
   @include mobile {
     opacity: 1;
@@ -395,7 +412,7 @@ const projectsLabel = computed(() => {
   height: 1.5rem;
 }
 .title-arrow {
-  transform: rotateY(-68deg);
+  transform: scaleX(0);
   transform-origin: left center;
   transition: transform var(--dur-m) var(--custom-ease-out);
   @include mobile {

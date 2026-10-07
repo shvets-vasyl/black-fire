@@ -22,7 +22,7 @@
       >
         <div class="left">
           <h3 class="title h3">{{ project.name }}</h3>
-          <p class="descr p1" v-html="project.descr" />
+          <div class="descr p1" v-html="project.descr" />
 
           <div class="info">
             <div class="info-item">
@@ -39,34 +39,32 @@
             </div>
           </div>
 
-          <CommonButtonTemplate
-            :href="project.websiteLink"
-            grey
-            external
-            text="visit website"
+          <img
+            v-if="project.photos[0]"
+            class="photo-mob"
+            :src="project.photos[0]"
+            :alt="project.name"
           />
 
-          <img class="photo-mob" :src="project.photos[0]" :alt="project.name" />
-
-          <div class="details">
-            <div class="details-item">
+          <div v-if="project.challenge || project.solution" class="details">
+            <div v-if="project.challenge" class="details-item">
               <p class="details-label p1">Challenge</p>
-              <p class="details-text">{{ project.challenge }}</p>
+              <div class="details-text" v-html="project.challenge" />
             </div>
-            <div class="details-item">
+            <div v-if="project.solution" class="details-item">
               <p class="details-label p1">Solution</p>
-              <p class="details-text">{{ project.solution }}</p>
+              <div class="details-text" v-html="project.solution" />
             </div>
           </div>
         </div>
-        <div class="right">
+        <div ref="photosRef" class="right">
           <img
-            v-for="(photo, i) in isMobile ? project.photos.slice(1) : project.photos"
-            :key="i"
+            v-for="(photo, i) in loopedPhotos"
+            :key="`${project.slug}-${i}`"
             class="photo"
             :src="photo"
             :alt="project.name"
-            @load="updateProgress"
+            @load="onPhotoLoad"
           />
         </div>
       </div>
@@ -99,18 +97,18 @@
 </template>
 
 <script setup lang="ts">
-import { findProject } from "~/data/projects"
 import { transitionDurations } from "~/utils/gsap-autoimport"
 
 const route = useRoute()
 const { isMobile } = useViewport()
+const { data: projects } = await useProjects()
 const { isOpen, project, open, close } = useProjectPopup()
 
 const openFromQuery = (value: unknown) => {
   if (typeof value !== "string") return
-  const item = findProject(value)
+  const item = projects.value?.find((entry) => entry.slug === value)
   if (!item) return
-  if (isOpen.value && project.value?.name === item.name) return
+  if (isOpen.value && project.value?.slug === item.slug) return
   open(item)
 }
 
@@ -134,21 +132,137 @@ const closeRef = ref<HTMLButtonElement | null>(null)
 const blurRef = ref<HTMLElement | null>(null)
 const containerRef = ref<HTMLElement | null>(null)
 const paneRef = ref<HTMLElement | null>(null)
+const photosRef = ref<HTMLElement | null>(null)
 const progress = ref(0)
 const shown = ref(false)
+const copyCount = ref(3)
+
+let setHeight = 0
+let adjustLock = false
+let didPlace = false
+let photosObserver: ResizeObserver | null = null
+
+const loopedPhotos = computed(() => {
+  const photos = project.value?.photos ?? []
+  if (!photos.length) return []
+  if (isMobile.value) return photos.slice(1)
+  return Array.from({ length: copyCount.value }, () => photos).flat()
+})
+
+const measureSet = () => {
+  const right = photosRef.value
+  const pane = paneRef.value
+  const count = project.value?.photos.length ?? 0
+  if (!right || !pane || isMobile.value || !count) {
+    setHeight = 0
+    return
+  }
+
+  const imgs = [...right.querySelectorAll<HTMLImageElement>(".photo")]
+  if (imgs.length < count * 2) return
+
+  const firstSet = imgs.slice(0, count)
+  const nextFirst = imgs[count]
+  const ready = (img: HTMLImageElement) => img.complete && img.naturalHeight > 0
+  if (!firstSet.every(ready) || !ready(nextFirst)) return
+
+  const height = nextFirst.offsetTop - firstSet[0].offsetTop
+  if (height <= 0) return
+
+  const needed = Math.max(3, Math.ceil(pane.clientHeight / height) + 3)
+  if (needed > copyCount.value) copyCount.value = Math.min(needed, 24)
+
+  const prev = setHeight
+  setHeight = height
+
+  if (!didPlace) {
+    adjustLock = true
+    pane.scrollTop = height + pane.scrollTop
+    adjustLock = false
+    didPlace = true
+  } else if (prev > 0 && Math.abs(prev - height) > 1) {
+    const ratio = (pane.scrollTop - prev) / prev
+    adjustLock = true
+    pane.scrollTop = height * (1 + ratio)
+    adjustLock = false
+  }
+
+  normalizeScroll()
+}
+
+const normalizeScroll = () => {
+  const pane = paneRef.value
+  if (!pane || setHeight <= 0 || adjustLock) return
+
+  let top = pane.scrollTop
+  if (top >= setHeight * 2) {
+    top -= setHeight * Math.floor((top - setHeight) / setHeight)
+  } else if (top < setHeight) {
+    top += setHeight
+  }
+
+  if (top === pane.scrollTop) return
+
+  adjustLock = true
+  pane.scrollTop = top
+  adjustLock = false
+}
 
 const updateProgress = () => {
-  if (isMobile.value) return
+  if (isMobile.value || adjustLock) return
   const pane = paneRef.value
   if (!pane) return
+
+  if (setHeight > 0) {
+    normalizeScroll()
+    progress.value = Math.min(1, Math.max(0, (pane.scrollTop - setHeight) / setHeight))
+    return
+  }
+
+  if (project.value?.photos.length) {
+    progress.value = 0
+    return
+  }
+
   const max = pane.scrollHeight - pane.clientHeight
   progress.value = max > 0 ? pane.scrollTop / max : 1
 }
 
-watch(project, async () => {
+const onPhotoLoad = () => {
+  measureSet()
+  updateProgress()
+}
+
+const resetLoop = async () => {
+  didPlace = false
+  setHeight = 0
+  copyCount.value = 3
+  progress.value = 0
   await nextTick()
   if (paneRef.value) paneRef.value.scrollTop = 0
+  measureSet()
   updateProgress()
+}
+
+watch(project, () => {
+  resetLoop()
+})
+
+watch(isMobile, () => {
+  if (!shown.value) return
+  resetLoop()
+})
+
+watch(photosRef, (photos) => {
+  photosObserver?.disconnect()
+  photosObserver = null
+  if (!photos) return
+
+  photosObserver = new ResizeObserver(() => {
+    measureSet()
+    updateProgress()
+  })
+  photosObserver.observe(photos)
 })
 let popupTween: gsap.core.Timeline | null = null
 let motionId = 0
@@ -232,6 +346,7 @@ watch(isOpen, (open) => {
 })
 
 onUnmounted(() => {
+  photosObserver?.disconnect()
   popupTween?.kill()
   if (import.meta.client) window.removeEventListener("keydown", onKeydown)
   if (shown.value || isOpen.value) useLockScroll(false)
@@ -310,6 +425,8 @@ onUnmounted(() => {
   grid-template-columns: 1fr 1fr;
   align-items: start;
   overflow-y: auto;
+  overflow-anchor: none;
+  scrollbar-width: none;
   @include mobile {
     display: flex;
     flex-direction: column;
@@ -348,6 +465,25 @@ onUnmounted(() => {
 .descr {
   line-height: 1.25rem;
   margin-bottom: 1.5rem;
+}
+.descr:deep(p),
+.details-text:deep(p) {
+  margin: 0;
+}
+.descr:deep(ul),
+.details-text:deep(ul),
+.descr:deep(ol),
+.details-text:deep(ol) {
+  margin: 0.5rem 0 0;
+  padding-left: 1.25rem;
+}
+.descr:deep(ul),
+.details-text:deep(ul) {
+  list-style: disc;
+}
+.descr:deep(ol),
+.details-text:deep(ol) {
+  list-style: decimal;
 }
 .descr:deep(br) {
   @include mobile {

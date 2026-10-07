@@ -15,11 +15,11 @@ export function useProjectPopup() {
     }
 
     if (!import.meta.client) return
-    if (route.query.project === item.name) return
+    if (route.query.project === item.slug) return
 
     router.push({
       path: route.path,
-      query: { ...route.query, project: item.name },
+      query: { ...route.query, project: item.slug },
       hash: route.hash,
     })
   }

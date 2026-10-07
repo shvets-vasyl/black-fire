@@ -1,18 +1,68 @@
 <template>
-  <section id="hero" class="hero" data-anim-parallax="10" data-anim-parallax-scale="1.16">
+  <section id="hero" class="hero" data-anim-parallax="10">
     <img class="inner-media" src="/images/hero.webp" alt="" />
 
     <div class="content">
-      <p class="title-1" data-intro-title>black</p>
-      <p class="descr p1" data-intro-text>
+      <p ref="title1El" class="title-1">black</p>
+      <p ref="descrEl" class="descr p1">
         Marketing, film and web — <br />made by one team, in one voice.
       </p>
-      <p class="title-2" data-intro-title>fire</p>
+      <p ref="title2El" class="title-2">fire</p>
     </div>
   </section>
 </template>
 
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { animateTextDefault, animateTitleDefault } from "~/utils/animations"
+
+const title1El = ref<HTMLElement | null>(null)
+const title2El = ref<HTMLElement | null>(null)
+const descrEl = ref<HTMLElement | null>(null)
+
+let intros: gsap.core.Animation[] = []
+let pendingPlay = false
+
+const initIntro = () => {
+  intros = []
+
+  if (title1El.value) {
+    intros.push(animateTitleDefault(title1El.value, { type: "enter" }).pause(0))
+  }
+
+  if (title2El.value) {
+    intros.push(animateTitleDefault(title2El.value, { type: "enter" }).pause(0))
+  }
+
+  if (descrEl.value) {
+    intros.push(animateTextDefault(descrEl.value, { type: "enter" }).pause(0))
+  }
+
+  if (pendingPlay) playIntro()
+}
+
+const playIntro = () => {
+  if (!intros.length) {
+    pendingPlay = true
+    return
+  }
+
+  pendingPlay = false
+  intros.forEach((animation) => animation.play())
+}
+
+onMounted(async () => {
+  await document.fonts.ready
+  initIntro()
+})
+
+useAfterTransition(() => {
+  playIntro()
+})
+
+onBeforeUnmount(() => {
+  intros.forEach((animation) => animation.kill())
+})
+</script>
 
 <style scoped lang="scss">
 .hero {

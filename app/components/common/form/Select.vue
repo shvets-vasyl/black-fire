@@ -344,7 +344,7 @@ onUnmounted(() => {
 }
 
 .value.is-placeholder {
-  opacity: 0.35;
+  opacity: 0.5;
 }
 
 .caret {

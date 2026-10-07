@@ -38,7 +38,7 @@ const brands = [
 let loop: HorizontalLoopTimeline | null = null
 let visibilityTrigger: ScrollTrigger | null = null
 
-onMounted(() => {
+useAfterTransition(() => {
   const section = sectionRef.value
   const itemsRoot = itemsRef.value
   if (!section || !itemsRoot) return

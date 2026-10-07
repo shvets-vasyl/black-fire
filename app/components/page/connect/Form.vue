@@ -25,7 +25,10 @@
         @blur="onBlur('name')"
       />
 
-      <div class="phone">
+      <div
+        class="phone"
+        :class="{ 'has-error': !!(visibleError('phone') || visibleError('phoneCode')) }"
+      >
         <p class="phone-label p2">Your phone number<span class="mark">**</span></p>
         <div class="phone-row">
           <CommonFormSelect
@@ -281,6 +284,10 @@ const onSubmit = async () => {
     grid-template-columns: 1fr;
     row-gap: 1.5rem;
   }
+}
+
+.phone.has-error .phone-label {
+  color: var(--c-red);
 }
 
 .phone-label {

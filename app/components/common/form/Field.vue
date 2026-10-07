@@ -42,12 +42,6 @@ const labelBody = computed(() => {
 .field.has-error {
   border-color: var(--c-red);
   color: var(--c-red);
-
-  :deep(input),
-  :deep(textarea),
-  :deep(.trigger) {
-    color: var(--c-red);
-  }
 }
 
 .field {

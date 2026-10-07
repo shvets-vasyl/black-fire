@@ -1,5 +1,6 @@
 <template>
   <header
+    ref="headerEl"
     class="header"
     data-header
     :class="{ 'is-black': isBlack, 'is-menu-open': isMenuOpen }"
@@ -82,14 +83,49 @@
 
 <script setup lang="ts">
 import { formatCityTime } from "~/utils/time/formatCityTime"
+import { transitionDurations } from "~/utils/gsap-autoimport"
 
 const TIME_ZONE = "Europe/Riga"
 const CITY = "riga"
 
 const route = useRoute()
 const isBlack = useState("header-is-black", () => false)
+const headerIntroPlayed = useState("header-intro-played", () => false)
 const { nav, activeId, openNav, openSection } = useSiteNav()
 const { open: openConnect } = useConnectPopup()
+
+const headerEl = ref<HTMLElement | null>(null)
+let intro: gsap.core.Tween | null = null
+let pendingPlay = false
+
+const initIntro = () => {
+  if (!headerEl.value || headerIntroPlayed.value || intro) return
+
+  intro = gsap.fromTo(
+    headerEl.value,
+    { yPercent: -100 },
+    {
+      yPercent: 0,
+      duration: transitionDurations.durL,
+      ease: "custom.out",
+      paused: true,
+    }
+  )
+
+  if (pendingPlay) playIntro()
+}
+
+const playIntro = () => {
+  if (headerIntroPlayed.value) return
+  if (!intro) {
+    pendingPlay = true
+    return
+  }
+
+  pendingPlay = false
+  headerIntroPlayed.value = true
+  intro.play()
+}
 
 watch(
   () => route.path,
@@ -132,9 +168,16 @@ const onNavClick = (event: MouseEvent, id: string) => {
   openNav(event, id)
 }
 
-onMounted(() => {
+onMounted(async () => {
   updateCityTime()
   timerId = window.setInterval(updateCityTime, 1000)
+
+  await document.fonts.ready
+  initIntro()
+})
+
+useAfterTransition(() => {
+  playIntro()
 })
 
 onBeforeUnmount(() => {

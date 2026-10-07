@@ -51,7 +51,7 @@ const activeIndex = ref(0)
 
 let ctx: ReturnType<typeof gsap.context> | null = null
 
-onMounted(() => {
+useAfterTransition(() => {
   const section = sectionRef.value
   if (!section) return
 

@@ -44,7 +44,12 @@
           </div>
         </div>
 
-        <CommonButtonTemplate data-anim-fade text="let's talk" black @click="openConnect" />
+        <CommonButtonTemplate
+          data-anim-fade
+          text="let's talk"
+          black
+          @click="openConnect"
+        />
       </div>
     </div>
   </section>
@@ -146,7 +151,7 @@ const onItemTransitionEnd = (event: TransitionEvent) => {
   refreshFrame = window.requestAnimationFrame(() => ScrollTrigger.refresh())
 }
 
-onMounted(() => {
+useAfterTransition(() => {
   const section = sectionRef.value
   if (!section) return
 

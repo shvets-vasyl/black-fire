@@ -4,7 +4,7 @@
     class="popup"
     role="dialog"
     aria-modal="true"
-    :aria-label="projectName"
+    :aria-label="project?.name"
   >
     <div ref="blurRef" class="popup-blur" @click="close" />
 
@@ -13,49 +13,143 @@
         <IconClose />
       </button>
 
-      <div class="pane" data-lenis-prevent>
-        <p class="eyebrow p2">Project</p>
-        <h2 class="title h3">{{ projectName }}</h2>
+      <div
+        v-if="project"
+        ref="paneRef"
+        class="pane"
+        data-lenis-prevent
+        @scroll.passive="updateProgress"
+      >
+        <div class="left">
+          <h3 class="title h3">{{ project.name }}</h3>
+          <p class="descr p1" v-html="project.descr" />
 
-        <p class="lead p1">
-          A brand, a site and a campaign built as one system — so {{ projectName }} reads
-          the same in every place a person meets it.
-        </p>
+          <div class="info">
+            <div class="info-item">
+              <p class="info-title p2">Service</p>
+              <p class="p2">{{ project.services.join(", ") }}</p>
+            </div>
+            <div class="info-item">
+              <p class="info-title p2">Type</p>
+              <p class="p2">{{ project.category.join(", ") }}</p>
+            </div>
+            <div class="info-item">
+              <p class="info-title p2">Date</p>
+              <p class="p2">{{ project.year }}</p>
+            </div>
+          </div>
 
-        <div class="facts">
-          <div class="fact">
-            <p class="fact-label p2">Client</p>
-            <p class="fact-value">{{ projectName }}</p>
-          </div>
-          <div class="fact">
-            <p class="fact-label p2">Scope</p>
-            <p class="fact-value">Brand, website, film</p>
-          </div>
-          <div class="fact">
-            <p class="fact-label p2">Status</p>
-            <p class="fact-value">Selected work</p>
+          <CommonButtonTemplate
+            :href="project.websiteLink"
+            grey
+            external
+            text="visit website"
+          />
+
+          <img class="photo-mob" :src="project.photos[0]" :alt="project.name" />
+
+          <div class="details">
+            <div class="details-item">
+              <p class="details-label p1">Challenge</p>
+              <p class="details-text">{{ project.challenge }}</p>
+            </div>
+            <div class="details-item">
+              <p class="details-label p1">Solution</p>
+              <p class="details-text">{{ project.solution }}</p>
+            </div>
           </div>
         </div>
+        <div class="right">
+          <img
+            v-for="(photo, i) in isMobile ? project.photos.slice(1) : project.photos"
+            :key="i"
+            class="photo"
+            :src="photo"
+            :alt="project.name"
+            @load="updateProgress"
+          />
+        </div>
+      </div>
 
-        <p class="body p1">
-          The case itself is still just a name. The rest of the story — the pictures, the
-          process and the outcome — will sit here once the project has more than a title.
-        </p>
+      <div v-if="project && !isMobile" class="progress">
+        <svg class="progress-svg" viewBox="0 0 28 28" fill="none">
+          <circle
+            cx="14"
+            cy="14"
+            r="13"
+            stroke="black"
+            stroke-opacity="0.1"
+            stroke-width="2"
+          />
+          <circle
+            cx="14"
+            cy="14"
+            r="13"
+            stroke="black"
+            stroke-width="2"
+            pathLength="1"
+            stroke-dasharray="1"
+            :stroke-dashoffset="1 - progress"
+            transform="rotate(-90 14 14)"
+          />
+        </svg>
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
+import { findProject } from "~/data/projects"
 import { transitionDurations } from "~/utils/gsap-autoimport"
 
 const route = useRoute()
-const { isOpen, projectName, close } = useProjectPopup()
+const { isMobile } = useViewport()
+const { isOpen, project, open, close } = useProjectPopup()
+
+const openFromQuery = (value: unknown) => {
+  if (typeof value !== "string") return
+  const item = findProject(value)
+  if (!item) return
+  if (isOpen.value && project.value?.name === item.name) return
+  open(item)
+}
+
+onMounted(() => {
+  openFromQuery(route.query.project)
+})
+
+watch(
+  () => route.query.project,
+  (value) => {
+    if (value !== undefined) {
+      openFromQuery(value)
+      return
+    }
+
+    if (isOpen.value) close()
+  }
+)
 
 const closeRef = ref<HTMLButtonElement | null>(null)
 const blurRef = ref<HTMLElement | null>(null)
 const containerRef = ref<HTMLElement | null>(null)
+const paneRef = ref<HTMLElement | null>(null)
+const progress = ref(0)
 const shown = ref(false)
+
+const updateProgress = () => {
+  if (isMobile.value) return
+  const pane = paneRef.value
+  if (!pane) return
+  const max = pane.scrollHeight - pane.clientHeight
+  progress.value = max > 0 ? pane.scrollTop / max : 1
+}
+
+watch(project, async () => {
+  await nextTick()
+  if (paneRef.value) paneRef.value.scrollTop = 0
+  updateProgress()
+})
 let popupTween: gsap.core.Timeline | null = null
 let motionId = 0
 
@@ -137,13 +231,6 @@ watch(isOpen, (open) => {
   playOpen()
 })
 
-watch(
-  () => route.path,
-  () => {
-    if (isOpen.value) close()
-  }
-)
-
 onUnmounted(() => {
   popupTween?.kill()
   if (import.meta.client) window.removeEventListener("keydown", onKeydown)
@@ -201,8 +288,7 @@ onUnmounted(() => {
   background: rgba(0, 0, 0, 0.05);
   @include mobile {
     top: 0.5rem;
-    width: 2.75rem;
-    right: 0;
+    right: 0.5rem;
     background: none;
   }
 }
@@ -220,54 +306,118 @@ onUnmounted(() => {
 .pane {
   position: absolute;
   inset: 0;
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: start;
   overflow-y: auto;
-  padding: 2rem 1.5rem 1.5rem;
   @include mobile {
-    padding: 3rem 1rem 1rem;
+    display: flex;
+    flex-direction: column;
+    padding: 2.75rem 1rem 1rem;
   }
 }
-
 .pane::-webkit-scrollbar {
   display: none;
 }
-
-.eyebrow {
-  opacity: 0.5;
-  margin-bottom: 1rem;
-}
-
-.title {
-  margin-bottom: 2rem;
-  max-width: 43rem;
-}
-
-.lead {
-  max-width: 36rem;
-  margin-bottom: 3rem;
-}
-
-.facts {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 16rem));
-  gap: 1.5rem;
-  margin-bottom: 3rem;
-  padding-top: 1.5rem;
-  border-top: 0.0625rem solid rgba(0, 0, 0, 0.1);
+.left {
+  position: sticky;
+  top: 0;
+  padding: 2rem 1.5rem 1.5rem;
   @include mobile {
-    grid-template-columns: 1fr;
-    gap: 1rem;
+    position: static;
+    padding: 0;
+  }
+}
+.right {
+  display: flex;
+  flex-direction: column;
+  padding: 0.75rem 7.3125rem 0.75rem 0;
+  gap: 0.75rem;
+  @include mobile {
+    padding: 0;
   }
 }
 
-.fact-label {
+.title {
+  margin-bottom: 1.5rem;
+}
+.photo {
+  width: 100%;
+}
+
+.descr {
+  line-height: 1.25rem;
+  margin-bottom: 1.5rem;
+}
+.descr:deep(br) {
+  @include mobile {
+    display: none;
+  }
+}
+
+.info {
+  display: grid;
+  grid-template-columns: 12.5rem 7.875rem 3.75rem;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  @include mobile {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0;
+  }
+}
+.info-item:not(:last-child) {
+  border-right: 0.0625rem solid rgba(0, 0, 0, 0.1);
+}
+.info-item:not(:first-child) {
+  @include mobile {
+    padding-left: 1rem;
+  }
+}
+.info-title {
   opacity: 0.5;
   margin-bottom: 0.25rem;
 }
 
-.body {
-  max-width: 36rem;
-  opacity: 0.7;
+.details {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  margin-top: 4rem;
+  @include mobile {
+    display: flex;
+    flex-direction: column;
+    margin-top: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+}
+.details-label {
+  margin-bottom: 0.75rem;
+}
+.details-text {
+  opacity: 0.5;
+  font-size: 0.875rem;
+  line-height: 1.125rem;
+}
+
+.progress {
+  position: absolute;
+  bottom: 1.5rem;
+  left: 1.5rem;
+  @include mobile {
+    display: none;
+  }
+}
+.progress-svg {
+  width: 1.75rem;
+  height: 1.75rem;
+}
+
+.photo-mob {
+  display: none;
+  @include mobile {
+    display: block;
+    width: 100%;
+    margin-top: 3rem;
+  }
 }
 </style>

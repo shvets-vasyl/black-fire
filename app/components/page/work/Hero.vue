@@ -39,17 +39,17 @@
 
     <div ref="itemsEl" class="items">
       <div
-        v-for="({ name, photo, services, year, category }, i) in visibleItems"
-        :key="i"
+        v-for="item in visibleItems"
+        :key="item.name"
         class="item"
         role="button"
         tabindex="0"
-        @click="openProject(name)"
-        @keydown.enter.prevent="openProject(name)"
-        @keydown.space.prevent="openProject(name)"
+        @click="openProject(item)"
+        @keydown.enter.prevent="openProject(item)"
+        @keydown.space.prevent="openProject(item)"
       >
         <div class="item-photo">
-          <img class="inner-media" draggable="false" :src="photo" :alt="name" />
+          <img class="inner-media" draggable="false" :src="item.photos[0]" :alt="item.name" />
         </div>
 
         <div class="item-gradient" />
@@ -59,23 +59,23 @@
             <div class="title-arrow">
               <IconArrow2 />
             </div>
-            <div class="title-text">{{ name }}</div>
+            <div class="title-text">{{ item.name }}</div>
           </h3>
 
           <div class="item-details">
             <div class="item-services p2">
-              <span v-for="(service, s) in services" :key="s" class="item-service">
-                {{ service }}{{ s < services.length - 1 ? ", " : "" }}
+              <span v-for="(service, s) in item.services" :key="s" class="item-service">
+                {{ service }}{{ s < item.services.length - 1 ? ", " : "" }}
               </span>
             </div>
             <div class="item-year p2">
               <span class="year-text">
-                {{ year }}
+                {{ item.year }}
               </span>
             </div>
             <div class="item-category p2">
-              <span v-for="(cat, c) in category" :key="c" class="item-cat">
-                {{ cat }}{{ c < category.length - 1 ? ", " : "" }}
+              <span v-for="(cat, c) in item.category" :key="c" class="item-cat">
+                {{ cat }}{{ c < item.category.length - 1 ? ", " : "" }}
               </span>
             </div>
           </div>
@@ -86,52 +86,9 @@
 </template>
 
 <script setup lang="ts">
+import { projects as items } from "~/data/projects"
 import { animateFadeDefault, animateTitleDefault } from "~/utils/animations"
 import { transitionDurations } from "~/utils/gsap-autoimport"
-const items = [
-  {
-    category: ["design"],
-    services: ["production", "marketing"],
-    year: "2025",
-    name: "Zinchenko",
-    photo: "/images/work/work-1.webp",
-  },
-  {
-    category: ["development"],
-    services: ["design", "production"],
-    year: "2025",
-    name: "Kovalenko",
-    photo: "/images/work/work-2.webp",
-  },
-  {
-    category: ["marketing"],
-    services: ["design", "development"],
-    year: "2024",
-    name: "Horizon",
-    photo: "/images/work/work-3.webp",
-  },
-  {
-    category: ["production"],
-    services: ["development", "marketing"],
-    year: "2024",
-    name: "Forma",
-    photo: "/images/work/work-4.webp",
-  },
-  {
-    category: ["design", "marketing"],
-    services: ["production"],
-    year: "2023",
-    name: "Mono",
-    photo: "/images/work/work-5.webp",
-  },
-  {
-    category: ["development", "production"],
-    services: ["design", "marketing"],
-    year: "2023",
-    name: "North",
-    photo: "/images/work/work-6.webp",
-  },
-]
 
 const filters = ["all", ...new Set(items.flatMap((item) => item.category))]
 const { open: openProject } = useProjectPopup()

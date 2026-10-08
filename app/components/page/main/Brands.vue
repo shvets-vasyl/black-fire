@@ -6,8 +6,13 @@
 
     <div class="viewport" data-anim-fade data-lenis-prevent-horizontal>
       <div ref="itemsRef" class="items">
-        <div v-for="(brand, i) in brands" :key="`${brand}-${i}`" class="item">
-          <img :src="brand" alt="" draggable="false" />
+        <div v-for="(brand, i) in brands" :key="`${brand.src}-${i}`" class="item">
+          <img
+            :src="brand.src"
+            alt=""
+            draggable="false"
+            :class="{ mark: brand.mark }"
+          />
         </div>
       </div>
     </div>
@@ -20,20 +25,17 @@ import { horizontalLoop, type HorizontalLoopTimeline } from "~/utils/horizontalL
 const sectionRef = ref<HTMLElement | null>(null)
 const itemsRef = ref<HTMLElement | null>(null)
 
-const brands = [
-  "/images/logo-1.svg",
-  "/images/logo-2.svg",
-  "/images/logo-3.svg",
-  "/images/logo-4.svg",
-  "/images/logo-1.svg",
-  "/images/logo-2.svg",
-  "/images/logo-3.svg",
-  "/images/logo-4.svg",
-  "/images/logo-1.svg",
-  "/images/logo-2.svg",
-  "/images/logo-3.svg",
-  "/images/logo-4.svg",
+const logoFiles = [
+  { src: "/images/logos/13-mission.svg" },
+  { src: "/images/logos/doga.svg" },
+  { src: "/images/logos/heroes.svg" },
+  { src: "/images/logos/molfar.svg" },
+  { src: "/images/logos/nimble.svg" },
+  { src: "/images/logos/trady.svg" },
+  { src: "/images/logos/trady-mark.svg", mark: true },
 ]
+
+const brands = [...logoFiles, ...logoFiles]
 
 let loop: HorizontalLoopTimeline | null = null
 let visibilityTrigger: ScrollTrigger | null = null
@@ -113,11 +115,19 @@ onBeforeUnmount(() => {
   }
 }
 .item img {
-  height: 2rem;
+  height: 2.75rem;
   width: auto;
+  max-width: 14rem;
   pointer-events: none;
   @include mobile {
-    height: 1.5rem;
+    height: 2rem;
+    max-width: 9rem;
+  }
+}
+.item img.mark {
+  height: 6.5rem;
+  @include mobile {
+    height: 4.5rem;
   }
 }
 </style>

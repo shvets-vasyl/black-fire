@@ -40,15 +40,15 @@
 
         <CommonLinkTemplate
           class="mail-mob"
-          text="sayhi@black-fire.work"
-          href="mailto:sayhi@black-fire.work"
+          text="sayhi@blackfire.studio"
+          href="mailto:sayhi@blackfire.studio"
         />
       </div>
 
       <CommonLinkTemplate
         class="mail"
-        text="sayhi@black-fire.work"
-        href="mailto:sayhi@black-fire.work"
+        text="sayhi@blackfire.studio"
+        href="mailto:sayhi@blackfire.studio"
       />
     </footer>
   </section>
@@ -60,7 +60,7 @@ const { open: openConnect } = useConnectPopup()
 
 const services = ["Branding", "NFT", "Websites", "Applications"]
 const socials = [
-  { link: "https://t.me/porohdima", text: "tELEGRAM" },
+  { link: "https://t.me/blackfire_commercial", text: "tELEGRAM" },
   { link: "https://www.instagram.com/", text: "iNSTAGRAM" },
 ]
 </script>

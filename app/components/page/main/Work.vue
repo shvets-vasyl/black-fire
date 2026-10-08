@@ -7,7 +7,17 @@
   >
     <div class="sticky">
       <div class="items">
-        <div v-for="(item, i) in items" :key="i" class="item">
+        <div
+          v-for="item in items"
+          :key="item.slug"
+          class="item"
+          role="button"
+          tabindex="0"
+          :aria-label="item.title"
+          @click="openProject(item.project)"
+          @keydown.enter.prevent="openProject(item.project)"
+          @keydown.space.prevent="openProject(item.project)"
+        >
           <img class="inner-media" :src="item.photo" :alt="item.title" />
           <div class="item-content">
             <div class="item-left">
@@ -121,8 +131,11 @@ onBeforeUnmount(() => {
   ctx?.revert()
 })
 const { data } = await useProjects()
+const { open: openProject } = useProjectPopup()
 const items = computed(() =>
   (data.value ?? []).slice(0, 3).map((item) => ({
+    project: item,
+    slug: item.slug,
     photo: item.photos[0] ?? "",
     title: item.name,
     descr: item.descr,
@@ -145,6 +158,7 @@ const totalCount = computed(() => padCount(items.value.length))
 .item {
   position: absolute;
   inset: 0;
+  cursor: pointer;
 
   &:not(:first-child) {
     clip-path: polygon(0% 100%, 100% 100%, 100% 100%, 0% 100%);

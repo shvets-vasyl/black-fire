@@ -6,19 +6,27 @@
 
         <div class="photos">
           <div
-            v-for="({ photo }, i) in items"
+            v-for="({ video }, i) in items"
             :key="i"
             class="photo"
             :class="{ 'is-active': activeIndex === i }"
           >
-            <img class="inner-media" draggable="false" :src="photo" alt="" />
+            <video
+              class="inner-media"
+              muted
+              loop
+              playsinline
+              preload="auto"
+              :src="video"
+              :data-index="i"
+            />
           </div>
         </div>
       </div>
       <div class="right">
         <div class="items">
           <div
-            v-for="({ title, descr, photo }, i) in items"
+            v-for="({ title, descr, video }, i) in items"
             :key="i"
             class="item"
             :class="{ 'is-active': activeIndex === i }"
@@ -34,7 +42,15 @@
               </div>
 
               <div class="item-photo">
-                <img class="inner-media" draggable="false" :src="photo" :alt="title" />
+                <video
+                  class="inner-media"
+                  muted
+                  loop
+                  playsinline
+                  preload="auto"
+                  :src="video"
+                  :data-index="i"
+                />
               </div>
             </div>
 
@@ -63,25 +79,25 @@ const items = [
     title: "Design",
     descr:
       "Brand identity, UX/UI and visuals that make your business recognizable and easy to use.",
-    photo: "/images/services.webp",
+    video: "/video/service-1.mp4",
   },
   {
     title: "Development",
     descr:
       "Brand identity, UX/UI and visuals that make your business recognizable and easy to use.",
-    photo: "/images/services.webp",
+    video: "/video/service-2.mp4",
   },
   {
     title: "Marketing",
     descr:
       "Brand identity, UX/UI and visuals that make your business recognizable and easy to use.",
-    photo: "/images/services.webp",
+    video: "/video/service-3.mp4",
   },
   {
     title: "Production",
     descr:
       "Brand identity, UX/UI and visuals that make your business recognizable and easy to use.",
-    photo: "/images/services.webp",
+    video: "/video/service-4.mp4",
   },
 ]
 
@@ -103,12 +119,32 @@ const paintProgress = () => {
   line.style.transform = `scaleX(${progress})`
 }
 
+const syncVideos = () => {
+  const section = sectionRef.value
+  if (!section) return
+
+  section.querySelectorAll<HTMLVideoElement>("video").forEach((video) => {
+    const index = Number(video.dataset.index)
+    const inMobileSlot = Boolean(video.closest(".item-photo"))
+    const slotVisible = isMobile.value ? inMobileSlot : !inMobileSlot
+    const shouldPlay = inView && slotVisible && index === active
+
+    if (shouldPlay) {
+      if (video.paused) video.play().catch(() => {})
+      return
+    }
+
+    if (!video.paused) video.pause()
+  })
+}
+
 const setActive = (index: number) => {
   if (lines[active]) lines[active].style.transform = "scaleX(0)"
   active = index
   activeIndex.value = index
   progress = 0
   paintProgress()
+  syncVideos()
 }
 
 const onTick = () => {
@@ -156,17 +192,22 @@ useAfterTransition(() => {
     end: "bottom top",
     onToggle: (self) => {
       inView = self.isActive
+      syncVideos()
     },
   })
 
   inView = visibilityTrigger.isActive
+  syncVideos()
   gsap.ticker.add(onTick)
 })
+
+watch(isMobile, syncVideos)
 
 onBeforeUnmount(() => {
   gsap.ticker.remove(onTick)
   visibilityTrigger?.kill()
   window.cancelAnimationFrame(refreshFrame)
+  sectionRef.value?.querySelectorAll("video").forEach((video) => video.pause())
 })
 </script>
 

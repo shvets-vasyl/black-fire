@@ -1,6 +1,6 @@
 <template>
   <section class="big-photo" data-anim-parallax>
-    <img class="inner-media" draggable="false" src="/images/photo.webp" />
+    <img class="inner-media" draggable="false" src="/images/about.avif" />
   </section>
 </template>
 

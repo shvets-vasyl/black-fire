@@ -240,4 +240,11 @@ const totalCount = computed(() => padCount(items.value.length))
     right: 1rem;
   }
 }
+
+.item-descr {
+  max-width: 30rem;
+  @include mobile {
+    max-width: none;
+  }
+}
 </style>

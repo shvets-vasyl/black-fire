@@ -9,7 +9,8 @@ export default defineNuxtPlugin(() => {
       orientation: "vertical",
       smoothWheel: true,
       wheelMultiplier: 1,
-      touchMultiplier: 2,
+      touchMultiplier: 1,
+      touchInertiaExponent: 1.15,
       syncTouch: true,
     })
   }

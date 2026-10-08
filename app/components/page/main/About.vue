@@ -52,6 +52,7 @@ const items = [
   grid-template-columns: 50% 50%;
   @include mobile {
     display: flex;
+    height: auto;
   }
 }
 .right {

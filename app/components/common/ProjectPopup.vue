@@ -39,6 +39,15 @@
             </div>
           </div>
 
+          <CommonButtonTemplate
+            v-if="project.website"
+            class="visit"
+            external
+            text="visit website"
+            :href="project.website"
+            grey
+          />
+
           <img
             v-if="project.photos[0]"
             class="photo-mob"
@@ -58,14 +67,27 @@
           </div>
         </div>
         <div ref="photosRef" class="right">
-          <img
-            v-for="(photo, i) in loopedPhotos"
-            :key="`${project.slug}-${i}`"
-            class="photo"
-            :src="photo"
-            :alt="project.name"
-            @load="onPhotoLoad"
-          />
+          <template v-for="(asset, i) in loopedMedia" :key="`${project.slug}-${i}`">
+            <video
+              v-if="asset.type === 'video'"
+              class="photo"
+              :src="asset.url"
+              :poster="asset.poster || undefined"
+              muted
+              playsinline
+              loop
+              autoplay
+              preload="metadata"
+              @loadeddata="onPhotoLoad"
+            />
+            <img
+              v-else
+              class="photo"
+              :src="asset.url"
+              :alt="project.name"
+              @load="onPhotoLoad"
+            />
+          </template>
         </div>
       </div>
 
@@ -142,28 +164,32 @@ let adjustLock = false
 let didPlace = false
 let photosObserver: ResizeObserver | null = null
 
-const loopedPhotos = computed(() => {
-  const photos = project.value?.photos ?? []
-  if (!photos.length) return []
-  if (isMobile.value) return photos.slice(1)
-  return Array.from({ length: copyCount.value }, () => photos).flat()
+const loopedMedia = computed(() => {
+  const media = project.value?.media ?? []
+  if (!media.length) return []
+  if (isMobile.value) return media.slice(1)
+  return Array.from({ length: copyCount.value }, () => media).flat()
 })
 
 const measureSet = () => {
   const right = photosRef.value
   const pane = paneRef.value
-  const count = project.value?.photos.length ?? 0
+  const count = project.value?.media.length ?? 0
   if (!right || !pane || isMobile.value || !count) {
     setHeight = 0
     return
   }
 
-  const imgs = [...right.querySelectorAll<HTMLImageElement>(".photo")]
-  if (imgs.length < count * 2) return
+  const nodes = [...right.querySelectorAll<HTMLElement>(".photo")]
+  if (nodes.length < count * 2) return
 
-  const firstSet = imgs.slice(0, count)
-  const nextFirst = imgs[count]
-  const ready = (img: HTMLImageElement) => img.complete && img.naturalHeight > 0
+  const firstSet = nodes.slice(0, count)
+  const nextFirst = nodes[count]
+  const ready = (node: HTMLElement | undefined) => {
+    if (node instanceof HTMLVideoElement) return node.readyState >= 1
+    if (node instanceof HTMLImageElement) return node.complete && node.naturalHeight > 0
+    return false
+  }
   if (!firstSet.every(ready) || !ready(nextFirst)) return
 
   const height = nextFirst.offsetTop - firstSet[0].offsetTop
@@ -219,7 +245,7 @@ const updateProgress = () => {
     return
   }
 
-  if (project.value?.photos.length) {
+  if (project.value?.media.length) {
     progress.value = 0
     return
   }
@@ -460,6 +486,7 @@ onUnmounted(() => {
 }
 .photo {
   width: 100%;
+  display: block;
 }
 
 .descr {
@@ -512,6 +539,10 @@ onUnmounted(() => {
 .info-title {
   opacity: 0.5;
   margin-bottom: 0.25rem;
+}
+
+.visit {
+  margin-bottom: 2rem;
 }
 
 .details {

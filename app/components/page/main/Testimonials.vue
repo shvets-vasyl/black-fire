@@ -16,8 +16,8 @@
             <img class="inner-media" draggable="false" :src="photo" :alt="name" />
           </div>
           <div class="person-info">
-            <p class="item-name p1">{{ name }}</p>
-            <p class="item-position p1">{{ position }}</p>
+            <p v-if="name" class="item-name p1">{{ name }}</p>
+            <p class="item-position p1" :class="{ 'is-only': !name }">{{ position }}</p>
           </div>
         </div>
       </div>
@@ -28,22 +28,22 @@
 <script setup lang="ts">
 const items = [
   {
-    text: "Having collaborated with Alex on multiple projects, I have consistently witnessed his unwavering commitment to collaboration, delivering top-notch results with remarkable efficiency. ",
-    name: "Mauro Coelho",
-    position: "Co-founder @ Team MHD",
-    photo: "/images/review.webp",
+    text: "BlackFire handles any task, from targeted advertising to website development. Whenever I need strong designers or marketers, they're the team I turn to. Everything is delivered on time and at the highest level.",
+    name: "Liubov Dziuzhynska",
+    position: "CEO @ DogaDoga",
+    photo: "/images/dogga.jpg",
   },
   {
-    text: "The way the team captured the essence of the Giverr brand and translated it into a cohesive and functional design was particularly impressive.",
-    name: "Mauro Coelho",
-    position: "Co-founder @ Team MHD",
-    photo: "/images/review.webp",
+    text: "BlackFire designed our internal CRM, created the motion design and took part in developing the Trady platform. I liked their approach and how well the team is organized internally. What I valued most was their help with things studios usually don't do, like legal matters.",
+    name: "",
+    position: "CEO @ Trady",
+    photo: "/images/trady.jpg",
   },
   {
-    text: "Working with Alex was great. He helped me start running my business on social media by enhancing my stories, improving images, and creating a much more professional appearance. ",
-    name: "Mauro Coelho",
-    position: "Co-founder @ Team MHD",
-    photo: "/images/review.webp",
+    text: "When we started working on the NFT collection, I didn't believe it could be done in a month. What impressed me most was how quickly I received progress updates. We could change direction on the fly, and the team adapted to my requests right away. I'm very happy with our collaboration.",
+    name: "",
+    position: "Founder @ American Heroes",
+    photo: "/images/heroes.jpg",
   },
 ]
 </script>
@@ -88,6 +88,9 @@ const items = [
 }
 .item-position {
   opacity: 0.5;
+  &.is-only {
+    opacity: 1;
+  }
 }
 .items {
   display: flex;
@@ -100,10 +103,12 @@ const items = [
   margin-top: 1rem;
 }
 .item {
+  flex: 0 0 33.33%;
   display: flex;
   flex-direction: column;
   padding: 0 2rem 0 1.5rem;
   @include mobile {
+    flex: none;
     padding: 0;
     padding-bottom: 1.5rem;
   }

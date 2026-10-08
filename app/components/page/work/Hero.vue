@@ -37,11 +37,7 @@
       </p>
     </div>
 
-    <div
-      ref="itemsEl"
-      class="items"
-      :class="{ 'is-pair': visibleItems.length === 2 }"
-    >
+    <div ref="itemsEl" class="items">
       <div
         v-for="item in visibleItems"
         :key="item.slug"

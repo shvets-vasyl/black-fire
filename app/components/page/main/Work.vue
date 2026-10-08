@@ -122,7 +122,7 @@ onBeforeUnmount(() => {
 })
 const { data } = await useProjects()
 const items = computed(() =>
-  (data.value ?? []).map((item) => ({
+  (data.value ?? []).slice(0, 3).map((item) => ({
     photo: item.photos[0] ?? "",
     title: item.name,
     descr: item.descr,

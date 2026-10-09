@@ -1,8 +1,8 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 import { fileURLToPath } from "node:url"
 
-const SITE_NAME = "BLACK FIRE"
-const SITE_DESCRIPTION = "Marketing, film and web — made by one team, in one voice."
+const SITE_NAME = "BlackFire Studio"
+const SITE_DESCRIPTION = "Design, Development & Marketing"
 
 export default defineNuxtConfig({
   typescript: {

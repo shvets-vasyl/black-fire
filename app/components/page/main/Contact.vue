@@ -38,6 +38,16 @@
           <span class="socials-comma p2" aria-hidden="true">,</span>
         </span>
 
+        <span class="policy-mob">
+          <CommonLinkTemplate
+            text="Privacy Policy"
+            href="/policy"
+            :active="isPolicy"
+            @click="openPolicy"
+          />
+          <span class="socials-comma p2" aria-hidden="true">,</span>
+        </span>
+
         <CommonLinkTemplate
           class="mail-mob"
           text="sayhi@blackfire.studio"
@@ -45,11 +55,22 @@
         />
       </div>
 
-      <CommonLinkTemplate
-        class="mail"
-        text="sayhi@blackfire.studio"
-        href="mailto:sayhi@blackfire.studio"
-      />
+      <div class="mail-group">
+        <span class="mail-item">
+          <CommonLinkTemplate
+            text="Privacy Policy"
+            href="/policy"
+            :active="isPolicy"
+            @click="openPolicy"
+          />
+          <span class="p2" aria-hidden="true">,</span>
+        </span>
+
+        <CommonLinkTemplate
+          text="sayhi@blackfire.studio"
+          href="mailto:sayhi@blackfire.studio"
+        />
+      </div>
     </footer>
   </section>
 </template>
@@ -57,6 +78,15 @@
 <script setup lang="ts">
 const { nav, activeId, openNav } = useSiteNav()
 const { open: openConnect } = useConnectPopup()
+const route = useRoute()
+const router = useRouter()
+
+const isPolicy = computed(() => route.path === "/policy")
+
+const openPolicy = (event: MouseEvent) => {
+  event.preventDefault()
+  if (route.path !== "/policy") void router.push("/policy")
+}
 
 const services = ["Branding", "NFT", "Websites", "Applications"]
 const socials = [
@@ -171,16 +201,27 @@ const socials = [
     row-gap: 4rem;
   }
 }
-.mail-mob {
+.mail-mob,
+.policy-mob {
   display: none;
   @include mobile {
     display: inline-flex;
   }
 }
-.mail {
+.policy-mob {
+  align-items: baseline;
+}
+.mail-group {
+  display: flex;
+  align-items: baseline;
+  gap: 1rem;
   @include mobile {
     display: none;
   }
+}
+.mail-item {
+  display: inline-flex;
+  align-items: baseline;
 }
 .copy {
   @include mobile {

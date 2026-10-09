@@ -2,7 +2,7 @@
   <main class="policy">
     <div class="grid">
       <div class="aside">
-        <h2 class="title h2" data-anim-title>privacy <br />policy</h2>
+        <h2 class="title h2">privacy <br />policy</h2>
         <p class="updated p2">Last updated: October 9, 2026</p>
       </div>
 

@@ -587,4 +587,8 @@ onUnmounted(() => {
     margin-top: 3rem;
   }
 }
+
+.info-item {
+  padding-right: 0.5rem;
+}
 </style>

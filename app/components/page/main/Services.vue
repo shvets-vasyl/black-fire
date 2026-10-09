@@ -79,25 +79,25 @@ const items = [
     title: "Design",
     descr:
       "Brand identity, UX/UI and visuals that make your business recognizable and easy to use.",
-    video: "/video/service-1.mp4",
+    video: "/video/service-4.mp4",
   },
   {
     title: "Development",
     descr:
-      "Brand identity, UX/UI and visuals that make your business recognizable and easy to use.",
+      "Websites, apps and Web3 products of any complexity, built fast, stable and ready to scale.",
     video: "/video/service-2.mp4",
   },
   {
     title: "Marketing",
     descr:
-      "Brand identity, UX/UI and visuals that make your business recognizable and easy to use.",
-    video: "/video/service-3.mp4",
+      "Strategy, ads, SEO, SMM and influencer campaigns that bring the right audience to your brand.",
+    video: "/video/service-1.mp4",
   },
   {
     title: "Production",
     descr:
-      "Brand identity, UX/UI and visuals that make your business recognizable and easy to use.",
-    video: "/video/service-4.mp4",
+      "Video, motion, 3D and AI content that tells your story and makes people stop scrolling.",
+    video: "/video/service-3.mp4",
   },
 ]
 

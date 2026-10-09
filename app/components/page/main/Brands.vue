@@ -6,13 +6,8 @@
 
     <div class="viewport" data-anim-fade data-lenis-prevent-horizontal>
       <div ref="itemsRef" class="items">
-        <div v-for="(brand, i) in brands" :key="`${brand.src}-${i}`" class="item">
-          <img
-            :src="brand.src"
-            alt=""
-            draggable="false"
-            :class="{ mark: brand.mark }"
-          />
+        <div v-for="(brand, i) in brands" :key="`${brand}-${i}`" class="item">
+          <img :src="brand" alt="" draggable="false" />
         </div>
       </div>
     </div>
@@ -26,13 +21,14 @@ const sectionRef = ref<HTMLElement | null>(null)
 const itemsRef = ref<HTMLElement | null>(null)
 
 const logoFiles = [
-  { src: "/images/logos/13-mission.svg" },
-  { src: "/images/logos/doga.svg" },
-  { src: "/images/logos/heroes.svg" },
-  { src: "/images/logos/molfar.svg" },
-  { src: "/images/logos/nimble.svg" },
-  { src: "/images/logos/trady.svg" },
-  { src: "/images/logos/trady-mark.svg", mark: true },
+  "/images/logos/brand-1.svg",
+  "/images/logos/brand-2.svg",
+  "/images/logos/brand-3.svg",
+  "/images/logos/brand-4.svg",
+  "/images/logos/brand-5.svg",
+  "/images/logos/brand-6.svg",
+  "/images/logos/brand-7.svg",
+  "/images/logos/brand-8.svg",
 ]
 
 const brands = [...logoFiles, ...logoFiles]
@@ -115,19 +111,9 @@ onBeforeUnmount(() => {
   }
 }
 .item img {
-  height: 2.75rem;
-  width: auto;
-  max-width: 14rem;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
   pointer-events: none;
-  @include mobile {
-    height: 2rem;
-    max-width: 9rem;
-  }
-}
-.item img.mark {
-  height: 6.5rem;
-  @include mobile {
-    height: 4.5rem;
-  }
 }
 </style>

@@ -262,8 +262,8 @@ onUnmounted(() => {
 .close {
   position: absolute;
   z-index: 3;
-  top: 1rem;
-  right: 1rem;
+  top: 0.75rem;
+  right: 0.75rem;
   width: 2.5rem;
   height: 2.5rem;
   display: flex;
@@ -272,9 +272,7 @@ onUnmounted(() => {
   background: rgba(0, 0, 0, 0.05);
   @include mobile {
     top: 0.5rem;
-    width: 2.75rem;
-    right: 0;
-    background: none;
+    right: 0.5rem;
   }
 }
 .close:deep(svg) {

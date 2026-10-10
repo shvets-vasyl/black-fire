@@ -1,29 +1,66 @@
 <template>
-  <section id="about" class="about">
-    <div class="left">
-      <CommonSubtitle text="about us" data-anim-text />
+  <section id="about" ref="sectionRef" class="about">
+    <div class="sticky">
+      <div class="left">
+        <CommonSubtitle text="about us" data-anim-text />
 
-      <div class="items" data-anim-fade>
-        <div v-for="({ number, text, photo }, i) in items" :key="i" class="item">
-          <h2 class="item-number h2">{{ number }}</h2>
-          <img v-if="i === 1" class="award-img" draggable="false" :src="photo" />
-          <p class="item-text p2">{{ text }}</p>
+        <div class="items" data-anim-fade>
+          <div v-for="({ number, text, photo }, i) in items" :key="i" class="item">
+            <h2 class="item-number h2">{{ number }}</h2>
+            <img v-if="i === 1" class="award-img" draggable="false" :src="photo" />
+            <p class="item-text p2">{{ text }}</p>
+          </div>
         </div>
-      </div>
 
-      <h4 class="text h4" data-anim-title>
-        <span class="space" />We're a crew that works hard, thinks sharp and keeps the
-        vibe solid. No politics, no games. Just people who care, push and create. We talk
-        straight, lift each other up and aim higher every time.
-      </h4>
-    </div>
-    <div class="right" data-anim-parallax>
-      <img class="inner-media" draggable="false" src="/images/about.avif" alt="" />
+        <h4 class="text h4" data-anim-title>
+          <span class="space" />We're a crew that works hard, thinks sharp and keeps the
+          vibe solid. No politics, no games. Just people who care, push and create. We talk
+          straight, lift each other up and aim higher every time.
+        </h4>
+      </div>
+      <div class="right" data-anim-parallax>
+        <img class="inner-media" draggable="false" src="/images/about.avif" alt="" />
+      </div>
     </div>
   </section>
 </template>
 
 <script setup lang="ts">
+const sectionRef = ref<HTMLElement | null>(null)
+
+let ctx: ReturnType<typeof gsap.context> | null = null
+
+useAfterTransition(() => {
+  const section = sectionRef.value
+  if (!section) return
+
+  const photo = section.querySelector<HTMLElement>(".right")
+  if (!photo) return
+
+  ctx = gsap.context(() => {
+    gsap.matchMedia().add("(min-width: 1024px)", () => {
+      gsap.fromTo(
+        photo,
+        { width: "50%" },
+        {
+          width: "100%",
+          ease: "none",
+          scrollTrigger: {
+            trigger: section,
+            start: "top top",
+            end: "bottom bottom",
+            scrub: true,
+          },
+        }
+      )
+    })
+  }, section)
+})
+
+onBeforeUnmount(() => {
+  ctx?.revert()
+})
+
 const items = [
   {
     number: "120+",
@@ -47,16 +84,29 @@ const items = [
 
 <style scoped lang="scss">
 .about {
-  height: 100vh;
-  display: grid;
-  grid-template-columns: 50% 50%;
+  height: 200vh;
   @include mobile {
-    display: flex;
     height: auto;
   }
 }
+.sticky {
+  display: grid;
+  grid-template-columns: 50% 50%;
+  background: var(--c-black);
+  @include mobile {
+    position: relative;
+    display: flex;
+    height: auto;
+    overflow: visible;
+  }
+}
 .right {
-  position: relative;
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 2;
+  width: 50%;
+  height: 100%;
   @include mobile {
     display: none;
   }

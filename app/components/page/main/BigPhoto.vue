@@ -10,5 +10,9 @@
 .big-photo {
   height: 100vh;
   position: relative;
+  display: none;
+  @include mobile {
+    display: block;
+  }
 }
 </style>

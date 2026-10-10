@@ -5,10 +5,15 @@
     :class="{ 'is-black': black, 'is-grey': grey }"
     v-bind="controlAttrs"
   >
-    <span class="btn-arrow">
-      <IconArrow />
+    <span class="btn-track">
+      <span class="btn-arrow">
+        <IconArrow />
+      </span>
+      <span class="btn-text p2">{{ text }}</span>
+      <span class="btn-arrow" aria-hidden="true">
+        <IconArrow />
+      </span>
     </span>
-    <span class="btn-text p2">{{ text }}</span>
   </component>
 </template>
 
@@ -41,24 +46,31 @@ const controlAttrs = computed(() => {
 .btn-template {
   display: inline-flex;
   height: 2.5rem;
+  overflow: hidden;
   color: var(--c-black);
+}
+.btn-track {
+  display: flex;
+  height: 100%;
+  gap: 0.125rem;
+  margin-right: calc(-2.5rem - 0.125rem);
+  transition: transform 0.5s var(--custom-ease-out);
 }
 .btn-arrow,
 .btn-text {
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-shrink: 0;
+  height: 100%;
   background-color: var(--c-white);
-  transition: transform 0.4s var(--custom-ease-out);
 }
 .btn-arrow {
   width: 2.5rem;
-  transform: translateX(-0.0625rem);
 }
 .btn-text {
   padding: 0 1rem;
   font-family: var(--f-medium);
-  transform: translateX(0.0625rem);
 }
 .btn-template.is-black {
   color: var(--c-white);
@@ -73,9 +85,8 @@ const controlAttrs = computed(() => {
   background-color: rgba(0, 0, 0, 0.05);
 }
 @include hover {
-  .btn-template:hover .btn-arrow,
-  .btn-template:hover .btn-text {
-    transform: translateX(0);
+  .btn-template:hover .btn-track {
+    transform: translateX(calc(-2.5rem - 0.125rem));
   }
 }
 </style>

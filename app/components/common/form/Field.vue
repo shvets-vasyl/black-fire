@@ -31,7 +31,7 @@ const labelBody = computed(() => {
   position: relative;
   width: 100%;
   border-bottom: 0.0625rem solid rgba(0, 0, 0, 0.1);
-  padding-bottom: 1rem;
+  padding-bottom: 0.75rem;
   transition: border-color var(--transition-fast);
 }
 
@@ -41,7 +41,6 @@ const labelBody = computed(() => {
 
 .field.has-error {
   border-color: var(--c-red);
-  color: var(--c-red);
 }
 
 .field {

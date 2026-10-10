@@ -1,7 +1,7 @@
 <template>
   <main class="work-page">
     <PageWorkHero />
-    <PageMainContact />
+    <PageMainContact hide-subtitle />
   </main>
 </template>
 

@@ -286,10 +286,6 @@ const onSubmit = async () => {
   }
 }
 
-.phone.has-error .phone-label {
-  color: var(--c-red);
-}
-
 .phone-label {
   margin-bottom: 0.75rem;
   line-height: 1rem;
@@ -304,6 +300,7 @@ const onSubmit = async () => {
 .phone-row {
   display: grid;
   grid-template-columns: 6.5rem 1fr;
+  container-type: inline-size;
   border-bottom: 0.0625rem solid rgba(0, 0, 0, 0.1);
   transition: border-color var(--transition-fast);
 
@@ -340,7 +337,8 @@ const onSubmit = async () => {
   }
 
   :deep(.dropdown) {
-    min-width: 16rem;
+    width: 100cqi;
+    max-width: 100cqi;
   }
 }
 

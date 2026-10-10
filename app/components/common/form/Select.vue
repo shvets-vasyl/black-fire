@@ -363,16 +363,17 @@ onUnmounted(() => {
 
 .dropdown {
   position: absolute;
-  top: calc(100% + 0.25rem);
+  top: 100%;
+  margin-top: 0.0625rem;
   left: 0;
-  min-width: 100%;
+  width: 100%;
   max-height: 14.5rem;
   display: flex;
   flex-direction: column;
   overflow: hidden;
   background: var(--c-white);
   color: var(--c-black);
-  border: 0.0625rem solid rgba(0, 0, 0, 0.1);
+  box-shadow: 0 0.75rem 2rem 0.0625rem rgba(14, 18, 27, 0.1);
   z-index: 8;
 }
 
@@ -423,16 +424,15 @@ input.search {
 
 @include hover {
   .option:hover {
-    background: rgba(6, 6, 6, 0.06);
+    background: rgba(0, 0, 0, 0.02);
   }
 }
 
 .option.active:not(.selected) {
-  background: rgba(6, 6, 6, 0.06);
+  background: rgba(0, 0, 0, 0.02);
 }
 
 .option.selected {
-  background: var(--c-black);
-  color: var(--c-white);
+  background: rgba(0, 0, 0, 0.02);
 }
 </style>

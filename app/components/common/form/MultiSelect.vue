@@ -79,6 +79,9 @@
         @mousedown.prevent="toggleValue(option.value)"
       >
         <span>{{ option.label }}</span>
+        <span class="check" aria-hidden="true">
+          <IconCheck />
+        </span>
       </li>
     </ul>
   </CommonFormField>
@@ -289,6 +292,13 @@ onUnmounted(() => {
   flex-shrink: 0;
   color: inherit;
   opacity: 0.5;
+  transition: opacity 0.5s ease;
+}
+
+@include hover {
+  .tag-remove:hover {
+    opacity: 1;
+  }
 }
 
 .tag-remove :deep(.icon) {
@@ -309,22 +319,25 @@ onUnmounted(() => {
 
 .dropdown {
   position: absolute;
-  top: calc(100% + 0.25rem);
+  top: 100%;
+  margin-top: 0.0625rem;
   left: 0;
-  min-width: 100%;
+  width: 100%;
   max-height: 14.5rem;
   overflow-y: auto;
   overscroll-behavior: none;
   background: var(--c-white);
   color: var(--c-black);
-  border: 0.0625rem solid rgba(0, 0, 0, 0.1);
   z-index: 8;
   outline: none;
+  box-shadow: 0 0.75rem 2rem 0.0625rem rgba(14, 18, 27, 0.1);
 }
 
 .option {
   display: flex;
   align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
   padding: 0.625rem 0.75rem;
   cursor: pointer;
   white-space: nowrap;
@@ -332,19 +345,36 @@ onUnmounted(() => {
   line-height: 130%;
 }
 
+.check {
+  width: 1rem;
+  height: 1rem;
+  flex-shrink: 0;
+  border-radius: 0.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 0.0625rem solid rgba(0, 0, 0, 0.2);
+  color: transparent;
+}
+
+.option.selected .check {
+  background: var(--c-black);
+  border-color: var(--c-black);
+  color: var(--c-white);
+}
+
 @include hover {
   .option:hover {
-    background: rgba(6, 6, 6, 0.06);
+    background: rgba(0, 0, 0, 0.02);
   }
 }
 
 .option.active:not(.selected) {
-  background: rgba(6, 6, 6, 0.06);
+  background: rgba(0, 0, 0, 0.02);
 }
 
 .option.selected,
 .option.selected:hover {
-  background: var(--c-black);
-  color: var(--c-white);
+  background: rgba(0, 0, 0, 0.02);
 }
 </style>

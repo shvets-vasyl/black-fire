@@ -419,8 +419,8 @@ onUnmounted(() => {
 .close {
   position: absolute;
   z-index: 3;
-  top: 1rem;
-  right: 1rem;
+  top: 0.75rem;
+  right: 0.75rem;
   width: 2.5rem;
   height: 2.5rem;
   display: flex;
@@ -430,7 +430,6 @@ onUnmounted(() => {
   @include mobile {
     top: 0.5rem;
     right: 0.5rem;
-    background: none;
   }
 }
 
